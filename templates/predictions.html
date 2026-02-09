@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="glass-card">
+    <h2>Customer Churn Prediction</h2>
+
+    <p class="quote">
+        Enter customer usage, engagement, and business details to predict churn and analyze full business impact.
+    </p>
+
+    <!-- INPUT FORM -->
+    <form method="POST">
+
+        <!-- BASIC TELECOM INPUTS -->
+        <div class="form-group">
+            <label>International Plan</label>
+            <small>0 = No, 1 = Yes</small>
+            <input type="number" name="international" min="0" max="1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Voice Mail Plan</label>
+            <small>0 = No, 1 = Yes</small>
+            <input type="number" name="voicemail" min="0" max="1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Number of Voice Mail Messages</label>
+            <input type="number" name="vmail_messages" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label>Total Day Minutes</label>
+            <input type="number" name="day_minutes" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label>Total Evening Minutes</label>
+            <input type="number" name="eve_minutes" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label>Total Night Minutes</label>
+            <input type="number" name="night_minutes" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label>Customer Service Calls</label>
+            <input type="number" name="service_calls" min="0" required>
+        </div>
+
+        <!-- CUSTOMER ACTIVITY & LOYALTY INPUTS -->
+        <div class="impact-box">
+            <h4>📊 Customer Activity & Loyalty Indicators</h4>
+            <small>Enter 0 = No, 1 = Yes for all below</small>
+
+            <div class="form-group">
+                <label>Uses Mobile App Regularly</label>
+                <input type="number" name="active_app" min="0" max="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Pays Bills on Time</label>
+                <input type="number" name="on_time_payment" min="0" max="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Long-Term Customer (More than 1 year)</label>
+                <input type="number" name="long_term_user" min="0" max="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Recently Recharged Plan</label>
+                <input type="number" name="recent_recharge" min="0" max="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Actively Uses Data Packs</label>
+                <input type="number" name="uses_data" min="0" max="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>No Complaints in Recent Months</label>
+                <input type="number" name="no_complaints" min="0" max="1" required>
+            </div>
+        </div>
+
+        <!-- BUSINESS VALUE INPUT -->
+        <div class="impact-box">
+            <h4>💰 Business Value Input</h4>
+            <div class="form-group">
+                <label>Average Monthly Bill (₹)</label>
+                <input type="number" name="monthly_bill" min="0" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Predict Churn</button>
+    </form>
+
+    {% if result %}
+    <hr>
+
+    <!-- RESULT SUMMARY -->
+    <div class="result-box">
+        <h3>🔍 Prediction Result</h3>
+        <p><b>Status:</b> {{ result }}</p>
+        <p><b>Churn Probability:</b> {{ probability }}%</p>
+        <p><b>Risk Level:</b> {{ risk }}</p>
+        <p><b>Prediction Confidence:</b> {{ confidence }}</p>
+    </div>
+
+    <!-- BUSINESS IMPACT -->
+    <div class="impact-box">
+        <h3>📊 Business Impact Summary</h3>
+        <p><b>Customer Persona:</b> {{ persona }}</p>
+        <p><b>Urgency Score:</b> {{ urgency }}/100</p>
+        <p><b>Estimated Monthly Revenue Loss:</b> ₹{{ revenue_loss }}</p>
+    </div>
+
+    <!-- 1. CUSTOMER VALUE ESTIMATION -->
+    <div class="impact-box">
+        <h3>💰 Customer Value Estimation</h3>
+        <p><b>Annual Customer Value:</b> ₹{{ annual_value }}</p>
+        <p><b>Customer Lifetime Value (CLV):</b> ₹{{ clv }}</p>
+        <p><b>Customer Tier:</b> {{ tier }}</p>
+    </div>
+
+    <!-- 2. CHURN COST -->
+    <div class="impact-box">
+        <h3>📉 Churn Cost Estimation</h3>
+        <p><b>Estimated Churn Cost:</b> ₹{{ churn_cost }}</p>
+    </div>
+
+    <!-- 3. RETENTION BUDGET -->
+    <div class="impact-box">
+        <h3>🎯 Retention Investment Recommendation</h3>
+        <p><b>Suggested Retention Budget:</b> ₹{{ retention_budget }}</p>
+    </div>
+
+    <!-- 4. PAYMENT RELIABILITY -->
+    <div class="impact-box">
+        <h3>🧾 Payment Reliability</h3>
+        <p><b>Payment Reliability Score:</b> {{ payment_score }}%</p>
+    </div>
+
+    <!-- 5. PRIORITY LEVEL -->
+    <div class="impact-box">
+        <h3>🔥 Retention Priority</h3>
+        <p><b>Priority Level:</b> {{ priority }}</p>
+    </div>
+
+    <!-- 6. ENGAGEMENT HEALTH -->
+    <div class="impact-box">
+        <h3>🕒 Engagement Health</h3>
+        <p><b>Engagement Health Score:</b> {{ engagement_health }}%</p>
+    </div>
+
+    <!-- 7. OFFER SUITABILITY -->
+    <div class="impact-box">
+        <h3>📊 Offer Suitability</h3>
+        <p><b>Offer Suitability Score:</b> {{ offer_suitability }}%</p>
+    </div>
+
+    <!-- 8. GROWTH POTENTIAL -->
+    <div class="impact-box">
+        <h3>📈 Growth Opportunity</h3>
+        <p><b>Growth Potential:</b> {{ growth_potential }}</p>
+    </div>
+
+    <!-- 9. RETENTION STRATEGY -->
+    <div class="impact-box">
+        <h3>🧠 Retention Strategy Recommendation</h3>
+        <p><b>Recommended Strategy:</b> {{ strategy }}</p>
+    </div>
+
+    <!-- RISK FACTORS -->
+    <div class="insight-box">
+        <h4>⚠ Key Risk Factors Identified</h4>
+        <ul>
+            {% for r in reasons %}
+            <li>{{ r }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- SUGGESTIONS -->
+    <div class="action-box">
+        <h4>🛠 Recommended Retention Actions</h4>
+        <ul>
+            {% for s in suggestions %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- CHURN OFFERS -->
+    <div class="action-box">
+        <h4>🎯 Churn-Based Retention Offers</h4>
+        <ul>
+            {% for offer in offers %}
+            <li>{{ offer }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- LOYALTY SYSTEM -->
+    <div class="impact-box">
+        <h4>💎 Loyalty Evaluation</h4>
+        <p><b>Loyalty Score:</b> {{ loyalty_score }}%</p>
+        <p><b>Loyalty Reward:</b> {{ loyalty_offer }}</p>
+    </div>
+
+    <!-- FINAL COMBINED PACKAGE -->
+    <div class="result-box">
+        <h4>🎁 Final Reward Package</h4>
+        <ul>
+            {% for offer in offers %}
+            <li>{{ offer }}</li>
+            {% endfor %}
+            <li>{{ loyalty_offer }}</li>
+        </ul>
+    </div>
+
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h2>Dataset Preview</h2>
+    <table>
+        <tr>
+            {% for col in col_name %}
+            <th>{{ col }}</th>
+            {% endfor %}
+        </tr>
+        {% for row in row_val %}
+        <tr>
+            {% for val in row %}
+            <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

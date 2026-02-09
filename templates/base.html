@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Churn Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#243b55">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#141e30">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-brand">📊 ChurnAI</div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/upload">Upload</a>
+        <a href="/model">Train</a>
+        <a href="/prediction">Predict</a>
+        <a href="/history">History</a>
+<a href="/dashboard">Dashboard</a>
+
+    </div>
+</nav>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+
+
+<script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/static/service-worker.js')
+        .then(function() {
+          console.log("Service Worker Registered");
+        });
+    }
+    </script>
+    
+
+    <div class="mobile-nav">
+        <a href="/" class="nav-item">🏠 Home</a>
+        <a href="/prediction" class="nav-item">🔍 Predict</a>
+        <a href="/dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/history" class="nav-item">📜 History</a>
+    </div>
+    
+
+
+
+
+
+
+</body>
+</html>

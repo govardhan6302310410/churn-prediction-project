@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Prediction History</h2>
+
+<div style="text-align:right; margin-bottom:10px;">
+    <a href="{{ url_for('clear_history') }}" 
+       onclick="return confirm('Are you sure you want to delete ALL history?')">
+        <button class="btn-danger">Clear All History</button>
+    </a>
+</div>
+<div style="margin-bottom:15px;">
+    <a href="{{ url_for('export_excel') }}">
+        <button class="btn-primary">Download Excel Report</button>
+    </a>
+    <a href="{{ url_for('export_pdf') }}">
+        <button class="btn-secondary">Download PDF Report</button>
+    </a>
+    
+</div>
+
+
+<div class="pagination">
+
+    {% if page > 1 %}
+    <a href="/history?page={{ page-1 }}">Previous</a>
+    {% endif %}
+    
+    Page {{ page }} of {{ total_pages }}
+    
+    {% if page < total_pages %}
+    <a href="/history?page={{ page+1 }}">Next</a>
+    {% endif %}
+    
+    </div>
+    
+
+
+
+
+<form method="POST" style="margin-bottom:20px;">
+    <input type="text" name="search" placeholder="Search by result or date" required>
+    <button type="submit" class="btn-primary">Search</button>
+</form>
+
+<form method="get" class="filter-form">
+
+    Result:
+    <select name="result">
+        <option value="">All</option>
+        <option value="Churn">Churn</option>
+        <option value="No Churn">No Churn</option>
+    </select>
+
+    Min Probability:
+    <input type="number" name="min_prob">
+
+    Max Probability:
+    <input type="number" name="max_prob">
+
+    <button type="submit">Filter</button>
+
+</form>
+
+
+<div class="history-search">
+    <input type="text" placeholder="Search history...">
+</div>
+
+
+
+
+
+<table class="premium-table">
+<tr>
+    <th>ID</th>
+    <th>Day Minutes</th>
+    <th>Eve Minutes</th>
+    <th>Night Minutes</th>
+    <th>Service Calls</th>
+    <th>Result</th>
+    <th>Probability</th>
+    <th>Date</th>
+    <th>Action</th>
+</tr>
+
+{% for row in data %}
+<tr>
+    <td>{{ row[0] }}</td>
+    <td>{{ row[4] }}</td>
+    <td>{{ row[5] }}</td>
+    <td>{{ row[6] }}</td>
+    <td>{{ row[7] }}</td>
+    <td>{{ row[8] }}</td>
+    <td>{{ row[9] }}%</td>
+    <td>{{ row[10] }}</td>
+
+    <td>
+        <a href="{{ url_for('delete_record', id=row[0]) }}"
+           onclick="return confirm('Delete this record?')">
+            <button class="btn-danger">Delete</button>
+        </a>
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}
