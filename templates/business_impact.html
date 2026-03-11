@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-warn" style="font-size:13px">Business Intelligence</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Business Impact Analyzer</h1>
+    <p class="subtitle">Estimated revenue loss and retention cost comparison across all predictions</p>
+
+    {% if data %}
+    <!-- TOP KPIs -->
+    <div class="dashboard-grid" style="grid-template-columns: repeat(3, 1fr)">
+        <div class="stat-card total">
+            <h3>Total Predictions</h3>
+            <h2 data-count="{{ data.total }}">0</h2>
+        </div>
+        <div class="stat-card danger">
+            <h3>Churn Predicted</h3>
+            <h2 data-count="{{ data.churn_count }}">0</h2>
+        </div>
+        <div class="stat-card success">
+            <h3>Retained</h3>
+            <h2 data-count="{{ data.no_churn_count }}">0</h2>
+        </div>
+    </div>
+
+    <!-- Financial Impact -->
+    <div class="metric-grid" style="grid-template-columns: repeat(3, 1fr); margin-top:20px">
+        <div class="impact-box" style="margin:0; text-align:center">
+            <h4>💸 Revenue at Risk</h4>
+            <div
+                style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--accent-red); margin-top:12px">
+                ₹{{ data.total_revenue_risk }}</div>
+            <p style="font-size:12px; margin-top:4px">Annual revenue from churning customers</p>
+        </div>
+        <div class="action-box" style="margin:0; text-align:center">
+            <h4>🛡️ Retention Cost</h4>
+            <div
+                style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--accent-orange); margin-top:12px">
+                ₹{{ data.retention_cost }}</div>
+            <p style="font-size:12px; margin-top:4px">Estimated cost to retain</p>
+        </div>
+        <div class="result-box" style="margin:0; text-align:center; border-left-color:var(--accent-green)">
+            <h4>📈 Net Savings</h4>
+            <div
+                style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--accent-green); margin-top:12px">
+                ₹{{ data.net_savings }}</div>
+            <p style="font-size:12px; margin-top:4px">Potential savings through retention</p>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-row" style="margin-top:20px">
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">💰 Cost-Benefit Analysis</h3>
+            <canvas id="costChart"></canvas>
+        </div>
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">📊 Risk Distribution</h3>
+            <canvas id="riskPie"></canvas>
+        </div>
+    </div>
+
+    <!-- Additional Metrics -->
+    <div class="metric-grid" style="grid-template-columns: repeat(4, 1fr); margin-top:20px">
+        <div class="metric-card">
+            <div class="metric-icon">📈</div>
+            <div class="metric-value">{{ data.avg_probability }}%</div>
+            <div class="metric-label">Avg Churn Prob</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🔴</div>
+            <div class="metric-value" style="color:var(--accent-red)">{{ data.high_risk }}</div>
+            <div class="metric-label">High Risk</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🟠</div>
+            <div class="metric-value" style="color:var(--accent-orange)">{{ data.medium_risk }}</div>
+            <div class="metric-label">Medium Risk</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🟢</div>
+            <div class="metric-value" style="color:var(--accent-green)">{{ data.low_risk }}</div>
+            <div class="metric-label">Low Risk</div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="glass-card" style="text-align:center">
+        <div style="font-size:48px; margin-bottom:16px">💰</div>
+        <h3>No Data Available</h3>
+        <p class="subtitle">Make predictions to see business impact analysis</p>
+        <a href="/prediction" class="btn-primary" style="text-decoration:none; margin-top:16px">Make a Prediction</a>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+{% if data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    new Chart(document.getElementById('costChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Revenue at Risk', 'Retention Cost', 'Net Savings'],
+            datasets: [{
+                label: 'Amount (₹)',
+                data: [
+                    Number("{{ data.total_revenue_risk }}"),
+                    Number("{{ data.retention_cost }}"),
+                    Number("{{ data.net_savings }}")
+                ],
+                backgroundColor: ['rgba(239, 35, 60, 0.7)', 'rgba(251, 133, 0, 0.7)', 'rgba(6, 214, 160, 0.7)'],
+                borderRadius: 8, borderSkipped: false, barThickness: 50
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    });
+
+    new Chart(document.getElementById('riskPie').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+            datasets: [{ data: [Number("{{ data.high_risk }}"), Number("{{ data.medium_risk }}"), Number("{{ data.low_risk }}")], backgroundColor: ['#ef233c', '#fb8500', '#06d6a0'], borderWidth: 0, cutout: '65%', borderRadius: 6, spacing: 3 }]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#8892a8', font: { family: 'Inter' } } } } }
+    });
+</script>
+{% endif %}
+
+{% endblock %}

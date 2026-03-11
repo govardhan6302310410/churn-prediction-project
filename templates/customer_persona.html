@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-info" style="font-size:13px">Customer Intelligence</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Customer Persona Generator</h1>
+    <p class="subtitle">Classify customers into meaningful personas based on behavior and risk patterns</p>
+
+    <!-- Persona Cards -->
+    <div class="dashboard-grid" style="grid-template-columns: repeat(5, 1fr)">
+        {% set persona_info = {
+        'High Value': {'icon': '💎', 'gradient': 'linear-gradient(135deg, #7b61ff, #4cc9f0)'},
+        'Loyal Customer': {'icon': '🏆', 'gradient': 'linear-gradient(135deg, #06d6a0, #38b000)'},
+        'At Risk': {'icon': '⚠️', 'gradient': 'linear-gradient(135deg, #ef233c, #f72585)'},
+        'Discount Seeker': {'icon': '🏷️', 'gradient': 'linear-gradient(135deg, #fb8500, #ffb703)'},
+        'New User': {'icon': '🌟', 'gradient': 'linear-gradient(135deg, #4cc9f0, #06d6a0)'}
+        } %}
+
+        {% for name, info in persona_info.items() %}
+        <div class="stat-card" style="background:{{ info.gradient }}">
+            <div style="font-size:28px; margin-bottom:8px">{{ info.icon }}</div>
+            <h3 style="font-size:11px">{{ name }}</h3>
+            <h2 data-count="{{ summary.get(name, 0) }}" style="font-size:2rem">0</h2>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-row" style="margin-top:20px">
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">🍩 Persona Distribution</h3>
+            <canvas id="personaPie"></canvas>
+        </div>
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">📊 Persona Comparison</h3>
+            <canvas id="personaBar"></canvas>
+        </div>
+    </div>
+
+    <!-- Persona Descriptions -->
+    <div class="glass-card" style="max-width:none; margin-top:20px">
+        <h3 style="color:var(--text-primary); margin-bottom:20px">📋 Persona Definitions</h3>
+        <div class="metric-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))">
+            <div class="metric-card" style="text-align:left">
+                <div style="font-size:24px; margin-bottom:8px">💎</div>
+                <h4 style="color:var(--accent-purple)">High Value</h4>
+                <p style="color:var(--text-secondary); font-size:13px; margin-top:6px">Heavy users with high loyalty and
+                    low churn risk. Top revenue contributors.</p>
+            </div>
+            <div class="metric-card" style="text-align:left">
+                <div style="font-size:24px; margin-bottom:8px">🏆</div>
+                <h4 style="color:var(--accent-green)">Loyal Customer</h4>
+                <p style="color:var(--text-secondary); font-size:13px; margin-top:6px">Consistent engagement, good
+                    loyalty scores, stable relationship.</p>
+            </div>
+            <div class="metric-card" style="text-align:left">
+                <div style="font-size:24px; margin-bottom:8px">⚠️</div>
+                <h4 style="color:var(--accent-red)">At Risk</h4>
+                <p style="color:var(--text-secondary); font-size:13px; margin-top:6px">High churn probability. Requires
+                    immediate retention intervention.</p>
+            </div>
+            <div class="metric-card" style="text-align:left">
+                <div style="font-size:24px; margin-bottom:8px">🏷️</div>
+                <h4 style="color:var(--accent-orange)">Discount Seeker</h4>
+                <p style="color:var(--text-secondary); font-size:13px; margin-top:6px">Moderate risk, frequent service
+                    calls. Responsive to promotions.</p>
+            </div>
+            <div class="metric-card" style="text-align:left">
+                <div style="font-size:24px; margin-bottom:8px">🌟</div>
+                <h4 style="color:var(--accent-cyan)">New User</h4>
+                <p style="color:var(--text-secondary); font-size:13px; margin-top:6px">Early-stage customer. Needs
+                    nurturing to build long-term value.</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const pLabels = ['High Value', 'Loyal Customer', 'At Risk', 'Discount Seeker', 'New User'];
+    const pValues = [{{ summary.get('High Value', 0) }}, { { summary.get('Loyal Customer', 0) } }, { { summary.get('At Risk', 0) } }, { { summary.get('Discount Seeker', 0) } }, { { summary.get('New User', 0) } }];
+    const pColors = ['#7b61ff', '#06d6a0', '#ef233c', '#fb8500', '#4cc9f0'];
+
+    new Chart(document.getElementById('personaPie').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: pLabels, datasets: [{ data: pValues, backgroundColor: pColors, borderWidth: 0, cutout: '65%', borderRadius: 6, spacing: 3 }] },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#8892a8', font: { family: 'Inter', size: 11 } } } } }
+    });
+
+    new Chart(document.getElementById('personaBar').getContext('2d'), {
+        type: 'bar',
+        data: { labels: pLabels, datasets: [{ label: 'Customers', data: pValues, backgroundColor: pColors.map(c => c + 'b3'), borderRadius: 8, borderSkipped: false }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6478', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    });
+</script>
+
+{% endblock %}

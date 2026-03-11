@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-purple" style="font-size:13px">Advanced Visualization</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Interactive Charts Dashboard</h1>
+    <p class="subtitle">Advanced charts for risk distribution, revenue impact, and customer behavior patterns</p>
+
+    {% if data %}
+    <!-- KPI Row -->
+    <div class="metric-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom:24px">
+        <div class="metric-card">
+            <div class="metric-icon">📊</div>
+            <div class="metric-value" data-count="{{ data.total }}">0</div>
+            <div class="metric-label">Total Predictions</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🔴</div>
+            <div class="metric-value" style="color:var(--accent-red)" data-count="{{ data.risk_dist.High }}">0</div>
+            <div class="metric-label">High Risk</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🟠</div>
+            <div class="metric-value" style="color:var(--accent-orange)" data-count="{{ data.risk_dist.Medium }}">0
+            </div>
+            <div class="metric-label">Medium Risk</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🟢</div>
+            <div class="metric-value" style="color:var(--accent-green)" data-count="{{ data.risk_dist.Low }}">0</div>
+            <div class="metric-label">Low Risk</div>
+        </div>
+    </div>
+
+    <!-- Chart Row 1: Risk + Revenue -->
+    <div class="chart-row">
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">🎯 Risk Distribution</h3>
+            <canvas id="riskDist"></canvas>
+        </div>
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">💰 Revenue Impact Buckets</h3>
+            <canvas id="revBuckets"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart Row 2: Behavior + Radar -->
+    <div class="chart-row" style="margin-top:20px">
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">📱 Usage Patterns: Churn vs Retained</h3>
+            <canvas id="behaviorChart"></canvas>
+        </div>
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">🕸️ Behavior Radar</h3>
+            <canvas id="radarChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Polar Area Chart -->
+    <div class="glass-card" style="max-width:600px; margin:20px auto 0">
+        <h3 style="color:var(--text-primary); text-align:center">🌀 Risk Level Polar Chart</h3>
+        <canvas id="polarChart"></canvas>
+    </div>
+
+    {% else %}
+    <div class="glass-card" style="text-align:center">
+        <div style="font-size:48px; margin-bottom:16px">📊</div>
+        <h3>No Data Available</h3>
+        <p class="subtitle">Make predictions to see interactive charts</p>
+        <a href="/prediction" class="btn-primary" style="text-decoration:none; margin-top:16px">Make a Prediction</a>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+{% if data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartOpts = {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#8892a8', font: { family: 'Inter', size: 12 } } } },
+        scales: { x: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } } }
+    };
+
+    // Risk Distribution Doughnut
+    new Chart(document.getElementById('riskDist').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [{ data: [{{ data.risk_dist.High }}, {{ data.risk_dist.Medium }}, {{ data.risk_dist.Low }}], backgroundColor: ['#ef233c', '#fb8500', '#06d6a0'], borderWidth: 0, cutout: '65%', borderRadius: 6, spacing: 3 }]
+        },
+        options: { responsive: true, plugins: { legend: chartOpts.plugins.legend } }
+    });
+
+    // Revenue Buckets
+    new Chart(document.getElementById('revBuckets').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['0-25%', '25-50%', '50-75%', '75-100%'],
+            datasets: [{ label: 'Customers', data: [{{ data.revenue_buckets['0-25%'] }}, {{ data.revenue_buckets['25-50%'] }}, {{ data.revenue_buckets['50-75%'] }}, {{ data.revenue_buckets['75-100%'] }}], backgroundColor: ['rgba(6,214,160,0.7)', 'rgba(76,201,240,0.7)', 'rgba(251,133,0,0.7)', 'rgba(239,35,60,0.7)'], borderRadius: 8, borderSkipped: false }]
+        },
+        options: chartOpts
+    });
+
+    // Behavior Grouped Bar
+    new Chart(document.getElementById('behaviorChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Day Minutes', 'Evening Minutes', 'Night Minutes'],
+            datasets: [
+                { label: 'Churn', data: [{{ data.behavior.churn.day }}, {{ data.behavior.churn.eve }}, {{ data.behavior.churn.night }}], backgroundColor: 'rgba(239, 35, 60, 0.7)', borderRadius: 6, borderSkipped: false },
+        { label: 'Retained', data: [{{ data.behavior.nochurn.day }}, {{ data.behavior.nochurn.eve }}, {{ data.behavior.nochurn.night }}], backgroundColor: 'rgba(6, 214, 160, 0.7)', borderRadius: 6, borderSkipped: false }
+            ]
+        },
+        options: chartOpts
+    });
+
+    // Radar
+    new Chart(document.getElementById('radarChart').getContext('2d'), {
+        type: 'radar',
+        data: {
+            labels: ['Day Usage', 'Evening Usage', 'Night Usage'],
+            datasets: [
+                { label: 'Churn', data: [{{ data.behavior.churn.day }}, {{ data.behavior.churn.eve }}, {{ data.behavior.churn.night }}], borderColor: '#ef233c', backgroundColor: 'rgba(239,35,60,0.1)', pointBackgroundColor: '#ef233c' },
+        { label: 'Retained', data: [{{ data.behavior.nochurn.day }}, {{ data.behavior.nochurn.eve }}, {{ data.behavior.nochurn.night }}], borderColor: '#06d6a0', backgroundColor: 'rgba(6,214,160,0.1)', pointBackgroundColor: '#06d6a0' }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#8892a8' } } }, scales: { r: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#5a6478', backdropColor: 'transparent' }, pointLabels: { color: '#8892a8' } } } }
+    });
+
+    // Polar
+    new Chart(document.getElementById('polarChart').getContext('2d'), {
+        type: 'polarArea',
+        data: {
+            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+            datasets: [{ data: [{{ data.risk_dist.High }}, {{ data.risk_dist.Medium }}, {{ data.risk_dist.Low }}], backgroundColor: ['rgba(239,35,60,0.6)', 'rgba(251,133,0,0.6)', 'rgba(6,214,160,0.6)'], borderWidth: 0 }]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#8892a8' } } }, scales: { r: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#5a6478', backdropColor: 'transparent' } } } }
+    });
+</script>
+{% endif %}
+
+{% endblock %}

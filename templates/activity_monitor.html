@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-info" style="font-size:13px">System Monitoring</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">System Activity Monitor</h1>
+    <p class="subtitle">Track predictions, dataset uploads, and model training activity</p>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-grid" style="grid-template-columns: repeat(3, 1fr)">
+        <div class="stat-card total">
+            <h3>Total Predictions</h3>
+            <h2 data-count="{{ stats.prediction_count }}">0</h2>
+        </div>
+        <div class="stat-card" style="background:linear-gradient(135deg, #06d6a0, #38b000)">
+            <h3>Dataset Uploads</h3>
+            <h2 data-count="{{ stats.upload_count }}">0</h2>
+        </div>
+        <div class="stat-card" style="background:linear-gradient(135deg, #7b61ff, #4cc9f0)">
+            <h3>Model Trainings</h3>
+            <h2 data-count="{{ stats.training_count }}">0</h2>
+        </div>
+    </div>
+
+    <!-- Activity Overview -->
+    <div class="chart-row" style="margin-top:20px">
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">📊 Activity Breakdown</h3>
+            <canvas id="activityPie"></canvas>
+        </div>
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">📈 Activity by Type</h3>
+            <canvas id="activityBar"></canvas>
+        </div>
+    </div>
+
+    <!-- System Info -->
+    <div class="glass-card" style="max-width:none; margin-top:20px">
+        <h3 style="color:var(--text-primary); margin-bottom:16px">🖥️ System Information</h3>
+        <div class="metric-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
+            <div class="metric-card">
+                <div class="metric-icon">🗄️</div>
+                <div class="metric-value" style="font-size:1rem">SQLite</div>
+                <div class="metric-label">Database</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🐍</div>
+                <div class="metric-value" style="font-size:1rem">Flask</div>
+                <div class="metric-label">Framework</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🤖</div>
+                <div class="metric-value" style="font-size:1rem">SVM + RF</div>
+                <div class="metric-label">ML Models</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">📊</div>
+                <div class="metric-value" style="font-size:1rem">Chart.js</div>
+                <div class="metric-label">Visualization</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Log -->
+    {% if stats.activities %}
+    <div class="glass-card" style="max-width:none; margin-top:20px">
+        <h3 style="color:var(--text-primary); margin-bottom:16px">📋 Recent Activity Log</h3>
+        <div style="overflow-x:auto">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Action</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in stats.activities %}
+                    <tr>
+                        <td>#{{ a[0] }}</td>
+                        <td>
+                            <span
+                                class="badge {% if a[1] == 'dataset_upload' %}badge-success{% elif a[1] == 'model_training' %}badge-purple{% else %}badge-info{% endif %}">
+                                {{ a[1]|replace('_', ' ')|title }}
+                            </span>
+                        </td>
+                        <td>{{ a[2] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const actLabels = ['Predictions', 'Uploads', 'Trainings'];
+    const actValues = [Number("{{ stats.prediction_count }}"), Number("{{ stats.upload_count }}"), Number("{{ stats.training_count }}")];
+    const actColors = ['#4cc9f0', '#06d6a0', '#7b61ff'];
+
+    new Chart(document.getElementById('activityPie').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: actLabels, datasets: [{ data: actValues, backgroundColor: actColors, borderWidth: 0, cutout: '65%', borderRadius: 6, spacing: 3 }] },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#8892a8', font: { family: 'Inter' } } } } }
+    });
+
+    new Chart(document.getElementById('activityBar').getContext('2d'), {
+        type: 'bar',
+        data: { labels: actLabels, datasets: [{ label: 'Count', data: actValues, backgroundColor: actColors.map(c => c + 'b3'), borderRadius: 8, borderSkipped: false, barThickness: 40 }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    });
+</script>
+
+{% endblock %}

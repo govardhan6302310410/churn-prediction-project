@@ -1,18 +1,88 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="glass-card">
-    <h2>Upload Dataset</h2>
+<div class="glass-card" style="max-width:700px">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+        <div class="step-item active">
+            <div class="step-circle">1</div>
+        </div>
+        <div class="step-item">
+            <div class="step-line"></div>
+            <div class="step-circle">2</div>
+        </div>
+        <div class="step-item">
+            <div class="step-line"></div>
+            <div class="step-circle">3</div>
+        </div>
+    </div>
 
+    <h2 class="gradient-text">Upload Dataset</h2>
     <p class="subtitle">
-        📁 High-quality data is the foundation of accurate machine learning models.
+        Upload your customer data to train the prediction model.
+        High-quality data is the foundation of accurate machine learning.
     </p>
 
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <br><br>
-        <button class="btn-primary">Upload Dataset</button>
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <span class="upload-icon">📂</span>
+            <div class="upload-text">Drag & drop your CSV file here</div>
+            <div class="upload-hint">or click to browse from your computer</div>
+            <div id="fileName" style="margin-top:12px; color:var(--accent-cyan); font-weight:600; display:none"></div>
+            <input type="file" name="file" id="fileInput" required style="display:none" accept=".csv">
+        </div>
+
+        <div style="text-align:center; margin-top:12px">
+            <span class="file-badge">📄 Supported: CSV format</span>
+        </div>
+
+        <div style="text-align:center; margin-top:24px">
+            <button type="submit" class="btn-primary" style="padding:14px 40px; font-size:15px" id="uploadBtn">
+                🚀 Upload & Continue
+            </button>
+        </div>
     </form>
 </div>
+
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+
+    fileInput.addEventListener('change', function () {
+        if (this.files.length > 0) {
+            fileName.textContent = '✅ ' + this.files[0].name;
+            fileName.style.display = 'block';
+            dropZone.style.borderColor = 'var(--accent-green)';
+            dropZone.style.background = 'rgba(6, 214, 160, 0.05)';
+        }
+    });
+
+    dropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--accent-cyan)';
+        this.style.background = 'rgba(76, 201, 240, 0.08)';
+    });
+
+    dropZone.addEventListener('dragleave', function () {
+        this.style.borderColor = '';
+        this.style.background = '';
+    });
+
+    dropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            fileName.textContent = '✅ ' + e.dataTransfer.files[0].name;
+            fileName.style.display = 'block';
+            this.style.borderColor = 'var(--accent-green)';
+            this.style.background = 'rgba(6, 214, 160, 0.05)';
+        }
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', function () {
+        showSpinner('Uploading dataset...');
+    });
+</script>
 
 {% endblock %}

@@ -1,200 +1,303 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="glass-card">
-    <h2>Customer Churn Prediction</h2>
+<div class="glass-card" style="max-width:920px">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+        <div class="step-item completed">
+            <div class="step-circle">✓</div>
+        </div>
+        <div class="step-item completed">
+            <div class="step-line"></div>
+            <div class="step-circle">✓</div>
+        </div>
+        <div class="step-item active">
+            <div class="step-line"></div>
+            <div class="step-circle">3</div>
+        </div>
+    </div>
 
-    <p class="quote">
+    <h2 class="gradient-text">Customer Churn Prediction</h2>
+    <p class="subtitle">
         Enter customer usage, engagement, and business details to predict churn and analyze full business impact.
     </p>
 
     <!-- INPUT FORM -->
-    <form method="POST">
+    <form method="POST" id="predictForm">
 
-        <!-- BASIC TELECOM INPUTS -->
-        <div class="form-group">
-            <label>International Plan</label>
-            <small>0 = No, 1 = Yes</small>
-            <input type="number" name="international" min="0" max="1" required>
-        </div>
+        <!-- SECTION: Telecom Usage -->
+        <div style="margin-bottom:28px">
+            <h3 style="margin-bottom:16px; font-size:1rem">
+                <span style="color:var(--accent-cyan)">📱</span> Telecom Usage Data
+            </h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>International Plan</label>
+                    <small>0 = No, 1 = Yes</small>
+                    <input type="number" name="international" min="0" max="1" required placeholder="0 or 1">
+                </div>
 
-        <div class="form-group">
-            <label>Voice Mail Plan</label>
-            <small>0 = No, 1 = Yes</small>
-            <input type="number" name="voicemail" min="0" max="1" required>
-        </div>
+                <div class="form-group">
+                    <label>Voice Mail Plan</label>
+                    <small>0 = No, 1 = Yes</small>
+                    <input type="number" name="voicemail" min="0" max="1" required placeholder="0 or 1">
+                </div>
 
-        <div class="form-group">
-            <label>Number of Voice Mail Messages</label>
-            <input type="number" name="vmail_messages" min="0" required>
-        </div>
+                <div class="form-group">
+                    <label>Voice Mail Messages</label>
+                    <small>Number of voicemail messages</small>
+                    <input type="number" name="vmail_messages" min="0" required placeholder="e.g. 25">
+                </div>
 
-        <div class="form-group">
-            <label>Total Day Minutes</label>
-            <input type="number" name="day_minutes" min="0" required>
-        </div>
+                <div class="form-group">
+                    <label>Total Day Minutes</label>
+                    <small>Minutes used during daytime</small>
+                    <input type="number" name="day_minutes" min="0" step="any" required placeholder="e.g. 200">
+                </div>
 
-        <div class="form-group">
-            <label>Total Evening Minutes</label>
-            <input type="number" name="eve_minutes" min="0" required>
-        </div>
+                <div class="form-group">
+                    <label>Total Evening Minutes</label>
+                    <small>Minutes used during evening</small>
+                    <input type="number" name="eve_minutes" min="0" step="any" required placeholder="e.g. 180">
+                </div>
 
-        <div class="form-group">
-            <label>Total Night Minutes</label>
-            <input type="number" name="night_minutes" min="0" required>
-        </div>
+                <div class="form-group">
+                    <label>Total Night Minutes</label>
+                    <small>Minutes used during night</small>
+                    <input type="number" name="night_minutes" min="0" step="any" required placeholder="e.g. 150">
+                </div>
 
-        <div class="form-group">
-            <label>Customer Service Calls</label>
-            <input type="number" name="service_calls" min="0" required>
-        </div>
-
-        <!-- CUSTOMER ACTIVITY & LOYALTY INPUTS -->
-        <div class="impact-box">
-            <h4>📊 Customer Activity & Loyalty Indicators</h4>
-            <small>Enter 0 = No, 1 = Yes for all below</small>
-
-            <div class="form-group">
-                <label>Uses Mobile App Regularly</label>
-                <input type="number" name="active_app" min="0" max="1" required>
-            </div>
-
-            <div class="form-group">
-                <label>Pays Bills on Time</label>
-                <input type="number" name="on_time_payment" min="0" max="1" required>
-            </div>
-
-            <div class="form-group">
-                <label>Long-Term Customer (More than 1 year)</label>
-                <input type="number" name="long_term_user" min="0" max="1" required>
-            </div>
-
-            <div class="form-group">
-                <label>Recently Recharged Plan</label>
-                <input type="number" name="recent_recharge" min="0" max="1" required>
-            </div>
-
-            <div class="form-group">
-                <label>Actively Uses Data Packs</label>
-                <input type="number" name="uses_data" min="0" max="1" required>
-            </div>
-
-            <div class="form-group">
-                <label>No Complaints in Recent Months</label>
-                <input type="number" name="no_complaints" min="0" max="1" required>
+                <div class="form-group" style="grid-column: 1 / -1">
+                    <label>Customer Service Calls</label>
+                    <small>Number of calls to customer service</small>
+                    <input type="number" name="service_calls" min="0" required placeholder="e.g. 2">
+                </div>
             </div>
         </div>
 
-        <!-- BUSINESS VALUE INPUT -->
-        <div class="impact-box">
-            <h4>💰 Business Value Input</h4>
+        <hr class="glow-divider">
+
+        <!-- SECTION: Customer Activity & Loyalty -->
+        <div style="margin-bottom:28px">
+            <h3 style="margin-bottom:16px; font-size:1rem">
+                <span style="color:var(--accent-purple)">📊</span> Customer Activity & Loyalty Indicators
+            </h3>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px">
+                Enter 0 = No, 1 = Yes for all fields below
+            </p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Uses Mobile App Regularly</label>
+                    <input type="number" name="active_app" min="0" max="1" required placeholder="0 or 1">
+                </div>
+
+                <div class="form-group">
+                    <label>Pays Bills on Time</label>
+                    <input type="number" name="on_time_payment" min="0" max="1" required placeholder="0 or 1">
+                </div>
+
+                <div class="form-group">
+                    <label>Long-Term Customer (1+ year)</label>
+                    <input type="number" name="long_term_user" min="0" max="1" required placeholder="0 or 1">
+                </div>
+
+                <div class="form-group">
+                    <label>Recently Recharged Plan</label>
+                    <input type="number" name="recent_recharge" min="0" max="1" required placeholder="0 or 1">
+                </div>
+
+                <div class="form-group">
+                    <label>Actively Uses Data Packs</label>
+                    <input type="number" name="uses_data" min="0" max="1" required placeholder="0 or 1">
+                </div>
+
+                <div class="form-group">
+                    <label>No Complaints Recently</label>
+                    <input type="number" name="no_complaints" min="0" max="1" required placeholder="0 or 1">
+                </div>
+            </div>
+        </div>
+
+        <hr class="glow-divider">
+
+        <!-- SECTION: Business Value -->
+        <div style="margin-bottom:28px">
+            <h3 style="margin-bottom:16px; font-size:1rem">
+                <span style="color:var(--accent-green)">💰</span> Business Value Input
+            </h3>
             <div class="form-group">
                 <label>Average Monthly Bill (₹)</label>
-                <input type="number" name="monthly_bill" min="0" required>
+                <small>Enter the customer's average monthly bill amount</small>
+                <input type="number" name="monthly_bill" min="0" step="any" required placeholder="e.g. 500">
             </div>
         </div>
 
-        <button type="submit" class="btn-primary">Predict Churn</button>
+        <div style="text-align:center">
+            <button type="submit" class="btn-primary" style="padding:16px 48px; font-size:16px">
+                🔮 Predict Churn
+            </button>
+        </div>
     </form>
 
     {% if result %}
-    <hr>
+    <hr class="glow-divider" style="margin:36px 0">
 
-    <!-- RESULT SUMMARY -->
-    <div class="result-box">
-        <h3>🔍 Prediction Result</h3>
-        <p><b>Status:</b> {{ result }}</p>
-        <p><b>Churn Probability:</b> {{ probability }}%</p>
-        <p><b>Risk Level:</b> {{ risk }}</p>
-        <p><b>Prediction Confidence:</b> {{ confidence }}</p>
+    <!-- ══════════ PREDICTION RESULT ══════════ -->
+    <div class="result-box" style="border-left-width:4px">
+        <h3 style="margin-bottom:16px">🔍 Prediction Result</h3>
+
+        <!-- Gauge -->
+        <div class="gauge-container">
+            <div class="gauge-wrapper">
+                <canvas id="gaugeChart"></canvas>
+                <div class="gauge-center">
+                    <div class="gauge-value"
+                        style="color: {% if probability >= 70 %}var(--accent-red){% elif probability >= 49 %}var(--accent-orange){% else %}var(--accent-green){% endif %}">
+                        {{ probability }}%
+                    </div>
+                    <div class="gauge-label">Churn Risk</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="metric-grid" style="grid-template-columns: repeat(4, 1fr)">
+            <div class="metric-card">
+                <div class="metric-icon">📋</div>
+                <div class="metric-value">{{ result }}</div>
+                <div class="metric-label">Status</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">⚠️</div>
+                <div class="metric-value">
+                    <span
+                        class="{% if risk == 'High Risk' %}risk-high{% elif risk == 'Medium Risk' %}risk-medium{% else %}risk-low{% endif %}">
+                        {{ risk }}
+                    </span>
+                </div>
+                <div class="metric-label">Risk Level</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🎯</div>
+                <div class="metric-value">{{ confidence }}</div>
+                <div class="metric-label">Confidence</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🚨</div>
+                <div class="metric-value">{{ urgency }}/100</div>
+                <div class="metric-label">Urgency</div>
+            </div>
+        </div>
     </div>
 
-    <!-- BUSINESS IMPACT -->
-    <div class="impact-box">
+    <!-- ══════════ BUSINESS IMPACT ══════════ -->
+    <div class="impact-box" style="margin-top:20px">
         <h3>📊 Business Impact Summary</h3>
-        <p><b>Customer Persona:</b> {{ persona }}</p>
-        <p><b>Urgency Score:</b> {{ urgency }}/100</p>
-        <p><b>Estimated Monthly Revenue Loss:</b> ₹{{ revenue_loss }}</p>
+        <div class="metric-grid" style="margin-top:16px">
+            <div class="metric-card">
+                <div class="metric-icon">💵</div>
+                <div class="metric-value">₹{{ revenue_loss }}</div>
+                <div class="metric-label">Monthly Revenue Loss</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">📅</div>
+                <div class="metric-value">₹{{ annual_value }}</div>
+                <div class="metric-label">Annual Value</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">💎</div>
+                <div class="metric-value">₹{{ clv }}</div>
+                <div class="metric-label">Lifetime Value (CLV)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🏷️</div>
+                <div class="metric-value">
+                    <span
+                        class="badge {% if tier == 'Platinum' %}badge-purple{% elif tier == 'Gold' %}badge-warn{% elif tier == 'Silver' %}badge-info{% else %}badge-success{% endif %}">
+                        {{ tier }}
+                    </span>
+                </div>
+                <div class="metric-label">Customer Tier</div>
+            </div>
+        </div>
     </div>
 
-    <!-- 1. CUSTOMER VALUE ESTIMATION -->
-    <div class="impact-box">
-        <h3>💰 Customer Value Estimation</h3>
-        <p><b>Annual Customer Value:</b> ₹{{ annual_value }}</p>
-        <p><b>Customer Lifetime Value (CLV):</b> ₹{{ clv }}</p>
-        <p><b>Customer Tier:</b> {{ tier }}</p>
+    <!-- ══════════ COST & RETENTION ══════════ -->
+    <div class="metric-grid" style="grid-template-columns: repeat(2, 1fr); margin-top:20px">
+        <div class="impact-box" style="margin-top:0">
+            <h4>📉 Churn Cost</h4>
+            <p style="font-size:1.4rem; font-weight:700; color:var(--accent-red) !important; margin-top:8px">₹{{
+                churn_cost }}</p>
+            <p style="font-size:12px; margin-top:4px">Estimated cost if customer churns</p>
+        </div>
+        <div class="impact-box" style="margin-top:0">
+            <h4>🎯 Retention Budget</h4>
+            <p style="font-size:1.4rem; font-weight:700; color:var(--accent-green) !important; margin-top:8px">₹{{
+                retention_budget }}</p>
+            <p style="font-size:12px; margin-top:4px">Suggested investment to retain</p>
+        </div>
     </div>
 
-    <!-- 2. CHURN COST -->
-    <div class="impact-box">
-        <h3>📉 Churn Cost Estimation</h3>
-        <p><b>Estimated Churn Cost:</b> ₹{{ churn_cost }}</p>
+    <!-- ══════════ HEALTH METRICS ══════════ -->
+    <div class="metric-grid" style="grid-template-columns: repeat(3, 1fr); margin-top:20px">
+        <div class="metric-card">
+            <div class="metric-icon">🔥</div>
+            <div class="metric-value">{{ priority }}</div>
+            <div class="metric-label">Priority Level</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🕒</div>
+            <div class="metric-value">{{ engagement_health }}%</div>
+            <div class="metric-label">Engagement Health</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">📊</div>
+            <div class="metric-value">{{ offer_suitability }}%</div>
+            <div class="metric-label">Offer Suitability</div>
+        </div>
     </div>
 
-    <!-- 3. RETENTION BUDGET -->
-    <div class="impact-box">
-        <h3>🎯 Retention Investment Recommendation</h3>
-        <p><b>Suggested Retention Budget:</b> ₹{{ retention_budget }}</p>
+    <!-- ══════════ STRATEGY ══════════ -->
+    <div class="metric-grid" style="grid-template-columns: 1fr 1fr; margin-top:20px">
+        <div class="insight-box" style="margin-top:0">
+            <h4>📈 Growth Opportunity</h4>
+            <p><b>Growth Potential:</b>
+                <span class="badge {% if growth_potential == 'High' %}badge-success{% else %}badge-warn{% endif %}">
+                    {{ growth_potential }}
+                </span>
+            </p>
+        </div>
+        <div class="insight-box" style="margin-top:0">
+            <h4>🧠 Retention Strategy</h4>
+            <p><b>Recommended:</b> <span style="color:var(--accent-cyan) !important">{{ strategy }}</span></p>
+        </div>
     </div>
 
-    <!-- 4. PAYMENT RELIABILITY -->
-    <div class="impact-box">
-        <h3>🧾 Payment Reliability</h3>
-        <p><b>Payment Reliability Score:</b> {{ payment_score }}%</p>
-    </div>
-
-    <!-- 5. PRIORITY LEVEL -->
-    <div class="impact-box">
-        <h3>🔥 Retention Priority</h3>
-        <p><b>Priority Level:</b> {{ priority }}</p>
-    </div>
-
-    <!-- 6. ENGAGEMENT HEALTH -->
-    <div class="impact-box">
-        <h3>🕒 Engagement Health</h3>
-        <p><b>Engagement Health Score:</b> {{ engagement_health }}%</p>
-    </div>
-
-    <!-- 7. OFFER SUITABILITY -->
-    <div class="impact-box">
-        <h3>📊 Offer Suitability</h3>
-        <p><b>Offer Suitability Score:</b> {{ offer_suitability }}%</p>
-    </div>
-
-    <!-- 8. GROWTH POTENTIAL -->
-    <div class="impact-box">
-        <h3>📈 Growth Opportunity</h3>
-        <p><b>Growth Potential:</b> {{ growth_potential }}</p>
-    </div>
-
-    <!-- 9. RETENTION STRATEGY -->
-    <div class="impact-box">
-        <h3>🧠 Retention Strategy Recommendation</h3>
-        <p><b>Recommended Strategy:</b> {{ strategy }}</p>
-    </div>
-
-    <!-- RISK FACTORS -->
-    <div class="insight-box">
-        <h4>⚠ Key Risk Factors Identified</h4>
+    <!-- ══════════ RISK FACTORS ══════════ -->
+    {% if reasons %}
+    <div class="insight-box" style="margin-top:20px">
+        <h4>⚠️ Key Risk Factors Identified</h4>
         <ul>
             {% for r in reasons %}
             <li>{{ r }}</li>
             {% endfor %}
         </ul>
     </div>
+    {% endif %}
 
-    <!-- SUGGESTIONS -->
-    <div class="action-box">
-        <h4>🛠 Recommended Retention Actions</h4>
+    <!-- ══════════ SUGGESTIONS ══════════ -->
+    {% if suggestions %}
+    <div class="action-box" style="margin-top:20px">
+        <h4>🛠️ Recommended Retention Actions</h4>
         <ul>
             {% for s in suggestions %}
             <li>{{ s }}</li>
             {% endfor %}
         </ul>
     </div>
+    {% endif %}
 
-    <!-- CHURN OFFERS -->
-    <div class="action-box">
+    <!-- ══════════ OFFERS ══════════ -->
+    <div class="action-box" style="margin-top:20px">
         <h4>🎯 Churn-Based Retention Offers</h4>
         <ul>
             {% for offer in offers %}
@@ -203,25 +306,76 @@
         </ul>
     </div>
 
-    <!-- LOYALTY SYSTEM -->
-    <div class="impact-box">
+    <!-- ══════════ LOYALTY ══════════ -->
+    <div class="impact-box" style="margin-top:20px">
         <h4>💎 Loyalty Evaluation</h4>
-        <p><b>Loyalty Score:</b> {{ loyalty_score }}%</p>
-        <p><b>Loyalty Reward:</b> {{ loyalty_offer }}</p>
+        <div style="display:flex; gap:24px; align-items:center; margin-top:12px; flex-wrap:wrap">
+            <div>
+                <span
+                    style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px">Loyalty
+                    Score</span>
+                <div style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:var(--accent-cyan)">
+                    {{ loyalty_score }}%</div>
+            </div>
+            <div style="flex:1; min-width:200px">
+                <div class="accuracy-bar" style="height:10px">
+                    <div class="accuracy-fill"
+                        style="width: {{ loyalty_score }}%; background: {% if loyalty_score > 60 %}var(--gradient-success){% elif loyalty_score > 30 %}var(--gradient-warn){% else %}var(--gradient-danger){% endif %}">
+                    </div>
+                </div>
+            </div>
+            <span class="badge badge-info">{{ loyalty_offer }}</span>
+        </div>
     </div>
 
-    <!-- FINAL COMBINED PACKAGE -->
-    <div class="result-box">
+    <!-- ══════════ FINAL PACKAGE ══════════ -->
+    <div class="result-box" style="margin-top:20px; border-left-color:var(--accent-green)">
         <h4>🎁 Final Reward Package</h4>
-        <ul>
+        <ul style="margin-top:12px">
             {% for offer in offers %}
-            <li>{{ offer }}</li>
+            <li style="padding:6px 0">{{ offer }}</li>
             {% endfor %}
-            <li>{{ loyalty_offer }}</li>
+            <li style="padding:6px 0; color:var(--accent-cyan) !important; font-weight:600">🏆 {{ loyalty_offer }}</li>
         </ul>
     </div>
 
     {% endif %}
 </div>
+
+{% if result %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Gauge Chart
+    const probability = {{ probability }};
+    const gaugeCtx = document.getElementById('gaugeChart').getContext('2d');
+
+    const gaugeColor = probability >= 70 ? '#ef233c' : probability >= 49 ? '#fb8500' : '#06d6a0';
+
+    new Chart(gaugeCtx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [probability, 100 - probability],
+                backgroundColor: [gaugeColor, 'rgba(255,255,255,0.04)'],
+                borderWidth: 0,
+                cutout: '82%'
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            rotation: -90,
+            circumference: 180,
+            animation: { animateRotate: true, duration: 1500 }
+        }
+    });
+</script>
+{% endif %}
+
+<script>
+    document.getElementById('predictForm').addEventListener('submit', function () {
+        showSpinner('Analyzing customer data... 🔮');
+    });
+</script>
 
 {% endblock %}

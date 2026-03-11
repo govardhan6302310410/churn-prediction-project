@@ -1,20 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card">
-    <h2>Dataset Preview</h2>
-    <table>
-        <tr>
-            {% for col in col_name %}
-            <th>{{ col }}</th>
-            {% endfor %}
-        </tr>
-        {% for row in row_val %}
-        <tr>
-            {% for val in row %}
-            <td>{{ val }}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
+
+<div class="glass-card" style="max-width:1100px; padding:28px; overflow:hidden">
+    <div style="text-align:center; margin-bottom:20px">
+        <span class="badge badge-info" style="font-size:13px; margin-bottom:12px">Data Explorer</span>
+        <h2 class="gradient-text">Dataset Preview</h2>
+        <p class="subtitle" style="margin-top:8px">Viewing the uploaded dataset columns and rows</p>
+    </div>
+
+    <div style="overflow-x:auto; border-radius:var(--radius-md)">
+        <table class="premium-table">
+            <thead>
+                <tr>
+                    {% for col in col_name %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in row_val %}
+                <tr>
+                    {% for val in row %}
+                    <td>{{ val }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="text-align:center; margin-top:20px">
+        <a href="/model" class="btn-secondary" style="text-decoration:none">⚙️ Continue to Train →</a>
+    </div>
 </div>
+
 {% endblock %}

@@ -20,5 +20,13 @@ def init_db():
     )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS system_activity (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        action TEXT,
+        timestamp TEXT
+    )
+    """)
+
     conn.commit()
     conn.close()

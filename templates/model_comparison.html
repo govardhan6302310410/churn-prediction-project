@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-info" style="font-size:13px">Model Analytics</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Model Performance Comparison</h1>
+    <p class="subtitle">Compare SVM and Random Forest models across key performance metrics</p>
+
+    {% if metrics %}
+    <!-- METRIC CARDS -->
+    <div class="dashboard-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom:28px">
+        <div class="glass-card" style="max-width:none; margin:0; text-align:center">
+            <div
+                style="font-size:14px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px">
+                Support Vector Machine (SVM)</div>
+            <div class="metric-grid" style="grid-template-columns: repeat(2, 1fr)">
+                <div class="metric-card">
+                    <div class="metric-icon">🎯</div>
+                    <div class="metric-value" style="color:var(--accent-cyan)">{{ metrics.svm.accuracy }}%</div>
+                    <div class="metric-label">Accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">📐</div>
+                    <div class="metric-value" style="color:var(--accent-purple)">{{ metrics.svm.precision }}%</div>
+                    <div class="metric-label">Precision</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🔄</div>
+                    <div class="metric-value" style="color:var(--accent-orange)">{{ metrics.svm.recall }}%</div>
+                    <div class="metric-label">Recall</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚖️</div>
+                    <div class="metric-value" style="color:var(--accent-green)">{{ metrics.svm.f1 }}%</div>
+                    <div class="metric-label">F1 Score</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card" style="max-width:none; margin:0; text-align:center">
+            <div
+                style="font-size:14px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px">
+                Random Forest (RF)</div>
+            <div class="metric-grid" style="grid-template-columns: repeat(2, 1fr)">
+                <div class="metric-card">
+                    <div class="metric-icon">🎯</div>
+                    <div class="metric-value" style="color:var(--accent-cyan)">{{ metrics.rf.accuracy }}%</div>
+                    <div class="metric-label">Accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">📐</div>
+                    <div class="metric-value" style="color:var(--accent-purple)">{{ metrics.rf.precision }}%</div>
+                    <div class="metric-label">Precision</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🔄</div>
+                    <div class="metric-value" style="color:var(--accent-orange)">{{ metrics.rf.recall }}%</div>
+                    <div class="metric-label">Recall</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚖️</div>
+                    <div class="metric-value" style="color:var(--accent-green)">{{ metrics.rf.f1 }}%</div>
+                    <div class="metric-label">F1 Score</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAR CHART -->
+    <div class="glass-card" style="max-width:none">
+        <h3 style="color:var(--text-primary); text-align:center">📊 Side-by-Side Performance Comparison</h3>
+        <canvas id="compChart"></canvas>
+    </div>
+
+    {% else %}
+    <div class="glass-card" style="text-align:center">
+        <div style="font-size:48px; margin-bottom:16px">⚙️</div>
+        <h3>Dataset Not Available</h3>
+        <p class="subtitle">Upload a dataset and train the model first</p>
+        <a href="/upload" class="btn-primary" style="text-decoration:none; margin-top:16px">Upload Dataset</a>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+{% if metrics %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    new Chart(document.getElementById('compChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+            datasets: [
+                {
+                    label: 'SVM',
+                    data: [{{ metrics.svm.accuracy }}, {{ metrics.svm.precision }}, {{ metrics.svm.recall }}, {{ metrics.svm.f1 }}],
+        backgroundColor: 'rgba(76, 201, 240, 0.7)',
+        borderRadius: 6,
+        borderSkipped: false,
+        barThickness: 30
+                },
+        {
+            label: 'Random Forest',
+            data: [{{ metrics.rf.accuracy }}, {{ metrics.rf.precision }}, {{ metrics.rf.recall }}, {{ metrics.rf.f1 }}],
+        backgroundColor: 'rgba(123, 97, 255, 0.7)',
+        borderRadius: 6,
+        borderSkipped: false,
+        barThickness: 30
+                }
+            ]
+        },
+        options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#8892a8', font: { family: 'Inter', size: 12 } } } },
+        scales: {
+            x: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+            y: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' }, max: 100 }
+        }
+    }
+    });
+</script>
+{% endif %}
+
+{% endblock %}

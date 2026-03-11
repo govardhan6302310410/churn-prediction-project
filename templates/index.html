@@ -2,54 +2,110 @@
 {% block content %}
 
 <!-- HERO SECTION -->
-<div class="hero-card">
-    <h1>Customer Churn Prediction</h1>
-    <p class="subtitle">
+<div class="hero-card" style="max-width:860px">
+    <div style="margin-bottom:20px">
+        <span class="badge badge-purple" style="font-size:13px">AI-Powered Analytics</span>
+    </div>
+    <h1 class="gradient-text" style="font-size:2.6rem">Customer Churn Prediction</h1>
+    <p class="subtitle" style="font-size:16px; margin-top:16px">
         An intelligent decision-support system that predicts customer churn,
         explains the reasons, and recommends retention actions using Machine Learning.
     </p>
 
     <div class="hero-actions">
-        <a href="/upload" class="btn-primary">Upload Dataset</a>
-        <a href="/model" class="btn-secondary">Train Model</a>
-        <a href="/prediction" class="btn-outline">Predict Churn</a>
+        <a href="/upload" class="btn-primary" style="padding:14px 32px; font-size:15px">
+            📁 Upload Dataset
+        </a>
+        <a href="/model" class="btn-secondary" style="padding:14px 32px; font-size:15px">
+            ⚙️ Train Model
+        </a>
+        <a href="/prediction" class="btn-outline" style="padding:14px 32px; font-size:15px">
+            🔍 Predict Churn
+        </a>
+    </div>
+</div>
+
+<!-- QUICK STATS -->
+<div class="quick-stats observe-fade">
+    <div class="quick-stat">
+        <div class="stat-number">2</div>
+        <div class="stat-desc">ML Models</div>
+    </div>
+    <div class="quick-stat">
+        <div class="stat-number">7</div>
+        <div class="stat-desc">Core Features</div>
+    </div>
+    <div class="quick-stat">
+        <div class="stat-number">98%</div>
+        <div class="stat-desc">Accuracy</div>
+    </div>
+    <div class="quick-stat">
+        <div class="stat-number">∞</div>
+        <div class="stat-desc">Predictions</div>
     </div>
 </div>
 
 <!-- FEATURES SECTION -->
-<div class="section">
-    <h2>What This System Does</h2>
+<div class="section observe-fade">
+    <span class="badge badge-info" style="margin-bottom:16px">Platform Features</span>
+    <h2 style="font-size:1.8rem">What This System Does</h2>
+    <p class="subtitle" style="margin-top:8px">Comprehensive AI-powered customer analytics and retention engine</p>
 
     <div class="card-grid">
-        <div class="info-card">
+        <div class="info-card fade-in-delay-1">
             <h3>📊 Smart Prediction</h3>
             <p>
                 Predicts whether a customer is likely to continue or leave,
-                along with churn probability and risk level.
+                along with churn probability, risk level, and confidence score.
             </p>
         </div>
 
-        <div class="info-card">
+        <div class="info-card fade-in-delay-2">
             <h3>🧠 Explainable AI</h3>
             <p>
-                Explains why churn is predicted using customer behavior
+                Explains why churn is predicted using customer behavior patterns
                 instead of acting as a black-box model.
             </p>
         </div>
 
-        <div class="info-card">
+        <div class="info-card fade-in-delay-3">
             <h3>💡 Decision Support</h3>
             <p>
                 Simulates retention actions and shows how churn probability
                 can be reduced before taking real-world decisions.
             </p>
         </div>
+
+        <div class="info-card fade-in-delay-1">
+            <h3>💰 Business Analytics</h3>
+            <p>
+                Computes Customer Lifetime Value, retention budgets, churn costs,
+                and recommends optimal strategies per customer tier.
+            </p>
+        </div>
+
+        <div class="info-card fade-in-delay-2">
+            <h3>🎯 Retention Engine</h3>
+            <p>
+                Auto-generates personalized offers and loyalty rewards based
+                on churn probability and customer usage patterns.
+            </p>
+        </div>
+
+        <div class="info-card fade-in-delay-3">
+            <h3>📈 Analytics Dashboard</h3>
+            <p>
+                Real-time dashboard with churn trends, risk distribution,
+                probability spread, and exportable reports.
+            </p>
+        </div>
     </div>
 </div>
 
 <!-- WORKFLOW SECTION -->
-<div class="section workflow-section">
-    <h2>System Workflow</h2>
+<div class="section workflow-section observe-fade">
+    <span class="badge badge-success" style="margin-bottom:16px">How It Works</span>
+    <h2 style="font-size:1.8rem">System Workflow</h2>
 
     <div class="workflow-cards">
         <div class="workflow-card">📁 Upload Dataset</div>
@@ -62,8 +118,16 @@
     </div>
 </div>
 
+<!-- INFO BANNER -->
+<div class="info-banner observe-fade">
+    <p>
+        "The goal is to turn data into information, and information into insight."
+    </p>
+    <div class="banner-author">— Carly Fiorina, Former CEO of HP</div>
+</div>
+
 <!-- FOOTER NOTE -->
-<div class="footer-note">
+<div class="footer-note" style="border:none; margin-top:50px">
     Built using Machine Learning, Flask, and real-world customer analytics concepts.
 </div>
 

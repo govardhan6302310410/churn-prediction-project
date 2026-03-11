@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-success" style="font-size:13px">Retention Planning</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Retention Strategy Generator</h1>
+    <p class="subtitle">Generate a structured retention plan based on churn probability and usage behavior</p>
+
+    <!-- Prediction Selector -->
+    <div class="glass-card" style="max-width:none">
+        <h3 style="color:var(--text-primary); margin-bottom:16px">🔍 Select a Customer Prediction</h3>
+        <form method="GET" style="display:flex; gap:12px; flex-wrap:wrap; align-items:end">
+            <div style="flex:1; min-width:200px">
+                <label>Choose Prediction</label>
+                <select name="id" style="width:100%">
+                    <option value="">-- Select --</option>
+                    {% for p in predictions %}
+                    <option value="{{ p.id }}" {% if selected_id==p.id %}selected{% endif %}>
+                        #{{ p.id }} — {{ p.result }} ({{ p.probability }}%) — {{ p.date }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-secondary">🛡️ Generate Strategy</button>
+        </form>
+    </div>
+
+    {% if strategy %}
+    <!-- Urgency Banner -->
+    <div class="result-box"
+        style="margin-top:20px; border-left-color:{% if strategy.color == 'red' %}var(--accent-red){% elif strategy.color == 'orange' %}var(--accent-orange){% else %}var(--accent-green){% endif %}">
+        <h3>⚡ Urgency Level: <span
+                style="color:{% if strategy.color == 'red' %}var(--accent-red){% elif strategy.color == 'orange' %}var(--accent-orange){% else %}var(--accent-green){% endif %}">{{
+                strategy.urgency }}</span></h3>
+        <p>Churn Probability: <b>{{ strategy.probability }}%</b></p>
+    </div>
+
+    <!-- Action Plan -->
+    <div class="glass-card" style="max-width:none; margin-top:20px">
+        <h3 style="color:var(--text-primary); margin-bottom:24px">📋 Structured Retention Plan</h3>
+
+        <div class="retention-timeline">
+            {% for action in strategy.actions %}
+            <div class="retention-step" style="display:flex; gap:20px; margin-bottom:24px; align-items:flex-start">
+                <div
+                    style="min-width:48px; height:48px; background:rgba({% if strategy.color == 'red' %}239, 35, 60{% elif strategy.color == 'orange' %}251, 133, 0{% else %}6, 214, 160{% endif %}, 0.15); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:24px">
+                    {{ action.icon }}
+                </div>
+                <div style="flex:1">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+                        <h4 style="color:var(--text-primary); margin:0">{{ action.title }}</h4>
+                        <span class="badge badge-info" style="font-size:11px">{{ action.timeline }}</span>
+                    </div>
+                    <p style="color:var(--text-secondary); font-size:14px; margin:0">{{ action.desc }}</p>
+                </div>
+            </div>
+            {% if not loop.last %}
+            <div style="margin-left:24px; height:16px; border-left:2px dashed rgba(255,255,255,0.1)"></div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Quick Summary -->
+    <div class="metric-grid" style="grid-template-columns: repeat(3, 1fr); margin-top:20px">
+        <div class="metric-card">
+            <div class="metric-icon">🎯</div>
+            <div class="metric-value">{{ strategy.actions|length }}</div>
+            <div class="metric-label">Action Items</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">⚡</div>
+            <div class="metric-value"
+                style="color:{% if strategy.color == 'red' %}var(--accent-red){% elif strategy.color == 'orange' %}var(--accent-orange){% else %}var(--accent-green){% endif %}">
+                {{ strategy.urgency }}</div>
+            <div class="metric-label">Priority</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">📊</div>
+            <div class="metric-value">{{ strategy.probability }}%</div>
+            <div class="metric-label">Churn Risk</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

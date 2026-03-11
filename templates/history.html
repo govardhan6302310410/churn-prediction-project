@@ -1,109 +1,130 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Prediction History</h2>
-
-<div style="text-align:right; margin-bottom:10px;">
-    <a href="{{ url_for('clear_history') }}" 
-       onclick="return confirm('Are you sure you want to delete ALL history?')">
-        <button class="btn-danger">Clear All History</button>
-    </a>
-</div>
-<div style="margin-bottom:15px;">
-    <a href="{{ url_for('export_excel') }}">
-        <button class="btn-primary">Download Excel Report</button>
-    </a>
-    <a href="{{ url_for('export_pdf') }}">
-        <button class="btn-secondary">Download PDF Report</button>
-    </a>
-    
-</div>
-
-
-<div class="pagination">
-
-    {% if page > 1 %}
-    <a href="/history?page={{ page-1 }}">Previous</a>
-    {% endif %}
-    
-    Page {{ page }} of {{ total_pages }}
-    
-    {% if page < total_pages %}
-    <a href="/history?page={{ page+1 }}">Next</a>
-    {% endif %}
-    
+<div style="max-width:1100px; margin:0 auto">
+    <div style="text-align:center; margin-bottom:28px">
+        <span class="badge badge-info" style="font-size:13px; margin-bottom:12px">Records & Reports</span>
+        <h2 class="gradient-text" style="font-size:1.8rem">Prediction History</h2>
+        <p class="subtitle" style="margin-top:8px">Browse, filter, and export your prediction records</p>
     </div>
-    
 
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+        <div class="action-bar-left">
+            <a href="{{ url_for('export_excel') }}" class="btn-primary"
+                style="text-decoration:none; font-size:13px; padding:10px 20px; margin-top:0">
+                📥 Export Excel
+            </a>
+            <a href="{{ url_for('export_pdf') }}" class="btn-outline"
+                style="text-decoration:none; font-size:13px; padding:10px 20px; margin-top:0">
+                📄 Export PDF
+            </a>
+        </div>
+        <div class="action-bar-right">
+            <a href="{{ url_for('clear_history') }}"
+                onclick="return confirm('Are you sure you want to delete ALL history?')" class="btn-danger"
+                style="text-decoration:none; font-size:13px; padding:10px 20px">
+                🗑️ Clear All
+            </a>
+        </div>
+    </div>
 
+    <!-- FILTER BAR -->
+    <form method="get" class="filter-form">
+        <label style="margin-bottom:0">Result:</label>
+        <select name="result" style="width:120px">
+            <option value="">All</option>
+            <option value="Churn" {% if result=='Churn' %}selected{% endif %}>Churn</option>
+            <option value="No Churn" {% if result=='No Churn' %}selected{% endif %}>No Churn</option>
+        </select>
 
+        <label style="margin-bottom:0">Min Prob:</label>
+        <input type="number" name="min_prob" value="{{ min_prob }}" placeholder="0" style="width:80px">
 
-<form method="POST" style="margin-bottom:20px;">
-    <input type="text" name="search" placeholder="Search by result or date" required>
-    <button type="submit" class="btn-primary">Search</button>
-</form>
+        <label style="margin-bottom:0">Max Prob:</label>
+        <input type="number" name="max_prob" value="{{ max_prob }}" placeholder="100" style="width:80px">
 
-<form method="get" class="filter-form">
+        <label style="margin-bottom:0">Date:</label>
+        <input type="text" name="date" value="{{ date }}" placeholder="YYYY-MM-DD" style="width:120px">
 
-    Result:
-    <select name="result">
-        <option value="">All</option>
-        <option value="Churn">Churn</option>
-        <option value="No Churn">No Churn</option>
-    </select>
+        <button type="submit" class="btn-primary" style="margin-top:0; padding:8px 20px">🔍 Filter</button>
+    </form>
 
-    Min Probability:
-    <input type="number" name="min_prob">
+    <!-- TABLE -->
+    <div class="glass-card" style="max-width:none; padding:20px; overflow:hidden">
+        <table class="premium-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Day Min</th>
+                    <th>Eve Min</th>
+                    <th>Night Min</th>
+                    <th>Svc Calls</th>
+                    <th>Result</th>
+                    <th>Probability</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td style="font-weight:600">#{{ row[0] }}</td>
+                    <td>{{ row[4] }}</td>
+                    <td>{{ row[5] }}</td>
+                    <td>{{ row[6] }}</td>
+                    <td>{{ row[7] }}</td>
+                    <td>
+                        {% if row[8] == 'Churn' %}
+                        <span class="badge badge-danger">⚠ Churn</span>
+                        {% else %}
+                        <span class="badge badge-success">✅ No Churn</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span
+                            style="font-weight:600; color:{% if row[9] >= 70 %}var(--accent-red){% elif row[9] >= 50 %}var(--accent-orange){% else %}var(--accent-green){% endif %}">
+                            {{ row[9] }}%
+                        </span>
+                    </td>
+                    <td style="font-size:12px; color:var(--text-muted)">{{ row[10] }}</td>
+                    <td>
+                        <a href="{{ url_for('delete_record', id=row[0]) }}"
+                            onclick="return confirm('Delete this record?')" class="btn-danger"
+                            style="font-size:11px; padding:6px 12px">
+                            🗑️
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
 
-    Max Probability:
-    <input type="number" name="max_prob">
+                {% if not data %}
+                <tr>
+                    <td colspan="9" style="text-align:center; padding:40px; color:var(--text-muted); font-size:15px">
+                        📭 No predictions found. <a href="/prediction"
+                            style="color:var(--accent-cyan); text-decoration:none">Make your first prediction →</a>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
 
-    <button type="submit">Filter</button>
+    <!-- PAGINATION -->
+    <div class="pagination">
+        {% if page > 1 %}
+        <a
+            href="/history?page={{ page-1 }}&result={{ result }}&min_prob={{ min_prob }}&max_prob={{ max_prob }}&date={{ date }}">←
+            Previous</a>
+        {% endif %}
 
-</form>
+        <span>Page {{ page }} of {{ total_pages }}</span>
 
-
-<div class="history-search">
-    <input type="text" placeholder="Search history...">
+        {% if page < total_pages %} <a
+            href="/history?page={{ page+1 }}&result={{ result }}&min_prob={{ min_prob }}&max_prob={{ max_prob }}&date={{ date }}">
+            Next →</a>
+            {% endif %}
+    </div>
 </div>
-
-
-
-
-
-<table class="premium-table">
-<tr>
-    <th>ID</th>
-    <th>Day Minutes</th>
-    <th>Eve Minutes</th>
-    <th>Night Minutes</th>
-    <th>Service Calls</th>
-    <th>Result</th>
-    <th>Probability</th>
-    <th>Date</th>
-    <th>Action</th>
-</tr>
-
-{% for row in data %}
-<tr>
-    <td>{{ row[0] }}</td>
-    <td>{{ row[4] }}</td>
-    <td>{{ row[5] }}</td>
-    <td>{{ row[6] }}</td>
-    <td>{{ row[7] }}</td>
-    <td>{{ row[8] }}</td>
-    <td>{{ row[9] }}%</td>
-    <td>{{ row[10] }}</td>
-
-    <td>
-        <a href="{{ url_for('delete_record', id=row[0]) }}"
-           onclick="return confirm('Delete this record?')">
-            <button class="btn-danger">Delete</button>
-        </a>
-    </td>
-</tr>
-{% endfor %}
-
-</table>
 
 {% endblock %}

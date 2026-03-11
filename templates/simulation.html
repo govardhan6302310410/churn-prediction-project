@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-purple" style="font-size:13px">Interactive Tool</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Prediction Simulation Tool</h1>
+    <p class="subtitle">Adjust customer parameters with sliders and watch churn probability update in real-time</p>
+
+    <div class="chart-row" style="grid-template-columns: 1fr 1fr; align-items:start">
+        <!-- Sliders Panel -->
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary); margin-bottom:20px">🎛️ Customer Parameters</h3>
+
+            <div class="sim-control">
+                <label>International Plan</label>
+                <div style="display:flex; align-items:center; gap:12px">
+                    <input type="range" id="s_intl" min="0" max="1" step="1" value="0" class="sim-slider">
+                    <span id="v_intl" class="sim-value">No</span>
+                </div>
+            </div>
+
+            <div class="sim-control">
+                <label>Voice Mail Plan</label>
+                <div style="display:flex; align-items:center; gap:12px">
+                    <input type="range" id="s_vm" min="0" max="1" step="1" value="0" class="sim-slider">
+                    <span id="v_vm" class="sim-value">No</span>
+                </div>
+            </div>
+
+            <div class="sim-control">
+                <label>Voicemail Messages</label>
+                <div style="display:flex; align-items:center; gap:12px">
+                    <input type="range" id="s_vmail" min="0" max="50" step="1" value="10" class="sim-slider">
+                    <span id="v_vmail" class="sim-value">10</span>
+                </div>
+            </div>
+
+            <div class="sim-control">
+                <label>Total Day Minutes</label>
+                <div style="display:flex; align-items:center; gap:12px">
+                    <input type="range" id="s_day" min="0" max="400" step="5" value="180" class="sim-slider">
+                    <span id="v_day" class="sim-value">180</span>
+                </div>
+            </div>
+
+            <div class="sim-control">
+                <label>Total Evening Minutes</label>
+                <div style="display:flex; align-items:center; gap:12px">
+                    <input type="range" id="s_eve" min="0" max="400" step="5" value="200" class="sim-slider">
+                    <span id="v_eve" class="sim-value">200</span>
+                </div>
+            </div>
+
+            <div class="sim-control">
+                <label>Total Night Minutes</label>
+                <div style="display:flex; align-items:center; gap:12px">
+                    <input type="range" id="s_night" min="0" max="400" step="5" value="150" class="sim-slider">
+                    <span id="v_night" class="sim-value">150</span>
+                </div>
+            </div>
+
+            <div class="sim-control">
+                <label>Customer Service Calls</label>
+                <div style="display:flex; align-items:center; gap:12px">
+                    <input type="range" id="s_service" min="0" max="10" step="1" value="1" class="sim-slider">
+                    <span id="v_service" class="sim-value">1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gauge Panel -->
+        <div class="glass-card" style="max-width:none; margin:0; text-align:center">
+            <h3 style="color:var(--text-primary); margin-bottom:20px">📊 Predicted Churn Probability</h3>
+
+            <div id="gaugeContainer" style="position:relative; width:250px; height:140px; margin:20px auto">
+                <canvas id="simGauge" width="250" height="140"></canvas>
+                <div style="position:absolute; bottom:5px; left:50%; transform:translateX(-50%); text-align:center">
+                    <div id="probValue"
+                        style="font-family:var(--font-heading); font-size:2.6rem; font-weight:800; color:var(--accent-cyan)">
+                        —</div>
+                    <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px">
+                        Churn Risk</div>
+                </div>
+            </div>
+
+            <div id="riskBadge" class="badge badge-info" style="font-size:14px; padding:8px 24px; margin-top:16px">
+                Adjust sliders to simulate
+            </div>
+
+            <div class="metric-grid" style="grid-template-columns: 1fr 1fr; margin-top:24px">
+                <div class="metric-card">
+                    <div class="metric-icon">📋</div>
+                    <div class="metric-value" id="simResult">—</div>
+                    <div class="metric-label">Prediction</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚠️</div>
+                    <div class="metric-value" id="simRisk">—</div>
+                    <div class="metric-label">Risk Level</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let gaugeChart = null;
+
+    function initGauge() {
+        const ctx = document.getElementById('simGauge').getContext('2d');
+        gaugeChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{ data: [0, 100], backgroundColor: ['rgba(76,201,240,0.3)', 'rgba(255,255,255,0.04)'], borderWidth: 0, cutout: '80%' }]
+            },
+            options: { responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, rotation: -90, circumference: 180, animation: { duration: 600 } }
+        });
+    }
+
+    function updateGauge(prob) {
+        const color = prob >= 70 ? '#ef233c' : prob >= 49 ? '#fb8500' : '#06d6a0';
+        gaugeChart.data.datasets[0].data = [prob, 100 - prob];
+        gaugeChart.data.datasets[0].backgroundColor = [color, 'rgba(255,255,255,0.04)'];
+        gaugeChart.update();
+        document.getElementById('probValue').textContent = prob + '%';
+        document.getElementById('probValue').style.color = color;
+    }
+
+    let debounceTimer;
+    function simulate() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const data = {
+                international: +document.getElementById('s_intl').value,
+                voicemail: +document.getElementById('s_vm').value,
+                vmail: +document.getElementById('s_vmail').value,
+                day: +document.getElementById('s_day').value,
+                eve: +document.getElementById('s_eve').value,
+                night: +document.getElementById('s_night').value,
+                service: +document.getElementById('s_service').value
+            };
+
+            document.getElementById('v_intl').textContent = data.international ? 'Yes' : 'No';
+            document.getElementById('v_vm').textContent = data.voicemail ? 'Yes' : 'No';
+            document.getElementById('v_vmail').textContent = data.vmail;
+            document.getElementById('v_day').textContent = data.day;
+            document.getElementById('v_eve').textContent = data.eve;
+            document.getElementById('v_night').textContent = data.night;
+            document.getElementById('v_service').textContent = data.service;
+
+            fetch('/api/simulate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.error) { document.getElementById('riskBadge').textContent = res.error; return; }
+                    updateGauge(res.probability);
+                    const risk = res.risk;
+                    const badge = document.getElementById('riskBadge');
+                    badge.textContent = risk;
+                    badge.className = 'badge ' + (risk === 'High Risk' ? 'badge-danger' : risk === 'Medium Risk' ? 'badge-warn' : 'badge-success');
+                    document.getElementById('simResult').textContent = res.probability >= 49 ? 'Churn' : 'No Churn';
+                    document.getElementById('simRisk').textContent = risk;
+                    document.getElementById('simRisk').className = 'metric-value ' + (risk === 'High Risk' ? 'risk-high' : risk === 'Medium Risk' ? 'risk-medium' : 'risk-low');
+                })
+                .catch(() => { document.getElementById('riskBadge').textContent = 'Model not trained yet'; });
+        }, 200);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initGauge();
+        document.querySelectorAll('.sim-slider').forEach(s => s.addEventListener('input', simulate));
+        simulate();
+    });
+</script>
+
+{% endblock %}

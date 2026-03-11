@@ -1,62 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Customer Churn Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChurnAI — Customer Churn Prediction</title>
+    <meta name="description" content="Premium AI-powered customer churn prediction and retention analytics platform">
+    <meta name="theme-color" content="#0a0e1a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='advanced.css') }}">
     <link rel="manifest" href="/static/manifest.json">
-<meta name="theme-color" content="#243b55">
-
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#141e30">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-
 </head>
+
 <body>
 
-<nav class="navbar">
-    <div class="nav-brand">📊 ChurnAI</div>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/upload">Upload</a>
-        <a href="/model">Train</a>
-        <a href="/prediction">Predict</a>
-        <a href="/history">History</a>
-<a href="/dashboard">Dashboard</a>
+    <!-- Animated Background Orbs -->
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
 
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Spinner Overlay -->
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div style="text-align:center">
+            <div class="spinner"></div>
+            <div class="spinner-text" id="spinnerText">Processing...</div>
+        </div>
     </div>
-</nav>
 
-<div class="container">
-    {% block content %}{% endblock %}
-</div>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand" style="text-decoration:none">
+            <div class="brand-icon">📊</div>
+            <span class="brand-text">ChurnAI</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" id="nav-home">Home</a>
+            <a href="/upload" id="nav-upload">Upload</a>
+            <a href="/model" id="nav-train">Train</a>
+            <a href="/prediction" id="nav-predict">Predict</a>
+            <a href="/history" id="nav-history">History</a>
+            <a href="/dashboard" id="nav-dashboard">Dashboard</a>
+            <div class="nav-dropdown">
+                <button class="nav-dropdown-btn" id="nav-advanced">Advanced ▾</button>
+                <div class="nav-dropdown-content">
+                    <div class="nav-dropdown-label">Analytics</div>
+                    <a href="/segmentation"><span class="dd-icon">🧩</span> Segmentation</a>
+                    <a href="/heatmap"><span class="dd-icon">🗺️</span> Risk Heatmap</a>
+                    <a href="/interactive-charts"><span class="dd-icon">📊</span> Interactive Charts</a>
+                    <a href="/risk-timeline"><span class="dd-icon">📈</span> Risk Timeline</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <div class="nav-dropdown-label">AI & Models</div>
+                    <a href="/model-comparison"><span class="dd-icon">⚖️</span> Model Comparison</a>
+                    <a href="/feature-importance"><span class="dd-icon">🏆</span> Feature Importance</a>
+                    <a href="/simulation"><span class="dd-icon">🎛️</span> Simulation</a>
+                    <a href="/ai-explanation"><span class="dd-icon">🧠</span> AI Explanation</a>
+                    <a href="/confidence"><span class="dd-icon">🎯</span> Confidence</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <div class="nav-dropdown-label">Business</div>
+                    <a href="/business-impact"><span class="dd-icon">💰</span> Business Impact</a>
+                    <a href="/retention-strategy"><span class="dd-icon">🛡️</span> Retention Strategy</a>
+                    <a href="/customer-persona"><span class="dd-icon">👤</span> Customer Persona</a>
+                    <a href="/risk-alerts"><span class="dd-icon">🚨</span> Risk Alerts</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <div class="nav-dropdown-label">System</div>
+                    <a href="/dataset-insights"><span class="dd-icon">📂</span> Dataset Insights</a>
+                    <a href="/activity-monitor"><span class="dd-icon">🖥️</span> Activity Monitor</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
 
+    <!-- FOOTER -->
+    <footer class="premium-footer">
+        <div class="footer-brand">ChurnAI</div>
+        <p>Built with Machine Learning, Flask & Real-World Customer Analytics</p>
+        <p style="margin-top:8px; font-size:11px; opacity:0.5">&copy; 2026 ChurnAI Platform. All rights reserved.</p>
+    </footer>
 
-<script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/static/service-worker.js')
-        .then(function() {
-          console.log("Service Worker Registered");
-        });
-    }
-    </script>
-    
-
+    <!-- MOBILE BOTTOM NAV -->
     <div class="mobile-nav">
-        <a href="/" class="nav-item">🏠 Home</a>
-        <a href="/prediction" class="nav-item">🔍 Predict</a>
-        <a href="/dashboard" class="nav-item">📊 Dashboard</a>
-        <a href="/history" class="nav-item">📜 History</a>
+        <a href="/" class="nav-item" id="mob-home">🏠<br>Home</a>
+        <a href="/prediction" class="nav-item" id="mob-predict">🔍<br>Predict</a>
+        <a href="/dashboard" class="nav-item" id="mob-dash">📊<br>Dashboard</a>
+        <a href="/history" class="nav-item" id="mob-history">📜<br>History</a>
+        <a href="/interactive-charts" class="nav-item" id="mob-advanced">⚡<br>Advanced</a>
     </div>
-    
 
+    <!-- SERVICE WORKER -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/service-worker.js')
+                .then(() => console.log('SW Registered'));
+        }
+    </script>
 
+    <!-- GLOBAL SCRIPTS -->
+    <script>
+        // Highlight active nav link
+        (function () {
+            const path = window.location.pathname;
+            const navMap = {
+                '/': 'nav-home',
+                '/upload': 'nav-upload',
+                '/model': 'nav-train',
+                '/prediction': 'nav-predict',
+                '/history': 'nav-history',
+                '/dashboard': 'nav-dashboard'
+            };
+            const mobMap = {
+                '/': 'mob-home',
+                '/prediction': 'mob-predict',
+                '/dashboard': 'mob-dash',
+                '/history': 'mob-history'
+            };
+            for (const [route, id] of Object.entries(navMap)) {
+                const el = document.getElementById(id);
+                if (el && path === route) el.classList.add('active');
+            }
+            for (const [route, id] of Object.entries(mobMap)) {
+                const el = document.getElementById(id);
+                if (el && path === route) el.classList.add('active');
+            }
+        })();
 
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast toast-' + type;
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
 
+        // Spinner
+        function showSpinner(text) {
+            document.getElementById('spinnerText').textContent = text || 'Processing...';
+            document.getElementById('spinnerOverlay').classList.add('active');
+        }
+        function hideSpinner() {
+            document.getElementById('spinnerOverlay').classList.remove('active');
+        }
 
+        // Animated counter
+        function animateCounter(el, target, duration = 1500) {
+            let start = 0;
+            const step = target / (duration / 16);
+            function update() {
+                start += step;
+                if (start >= target) {
+                    el.textContent = Math.round(target);
+                    return;
+                }
+                el.textContent = Math.round(start);
+                requestAnimationFrame(update);
+            }
+            update();
+        }
+
+        // Intersection Observer for fade-in
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.observe-fade').forEach(el => observer.observe(el));
+
+            // Animate counters
+            document.querySelectorAll('[data-count]').forEach(el => {
+                const target = parseFloat(el.dataset.count);
+                animateCounter(el, target);
+            });
+        });
+    </script>
 
 </body>
+
 </html>

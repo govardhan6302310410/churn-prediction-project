@@ -1,0 +1,310 @@
+/* ============================================================
+   CHURNAI ADVANCED FEATURES — Additional Styles
+   ============================================================ */
+
+/* ---- Heatmap ---- */
+.heatmap-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 4px;
+    border-radius: var(--radius-lg);
+}
+
+.heatmap-header {
+    background: rgba(123, 97, 255, 0.12);
+    color: var(--text-primary);
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    border-radius: var(--radius-sm);
+}
+
+.heatmap-row-label {
+    background: rgba(76, 201, 240, 0.08);
+    color: var(--text-primary);
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    min-width: 120px;
+}
+
+.heatmap-cell {
+    text-align: center;
+    padding: 20px 16px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-smooth);
+    cursor: default;
+    min-width: 80px;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+    position: relative;
+}
+
+.heatmap-value {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ---- Simulation Sliders ---- */
+.sim-control {
+    margin-bottom: 20px;
+}
+
+.sim-control label {
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.sim-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    outline: none;
+    transition: var(--transition-fast);
+    cursor: pointer;
+    flex: 1;
+}
+
+.sim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(76, 201, 240, 0.3);
+    transition: var(--transition-fast);
+}
+
+.sim-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 16px rgba(76, 201, 240, 0.5);
+}
+
+.sim-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(76, 201, 240, 0.3);
+}
+
+.sim-value {
+    min-width: 40px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent-cyan);
+    font-family: var(--font-heading);
+}
+
+/* ---- Alert Pulse ---- */
+@keyframes alertPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.alert-pulse {
+    animation: alertPulse 1.5s ease-in-out infinite;
+}
+
+.alert-card {
+    transition: var(--transition-smooth);
+}
+
+.alert-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(239, 35, 60, 0.15);
+    border-color: rgba(239, 35, 60, 0.35);
+}
+
+/* ---- Dropdown Navigation ---- */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-dropdown-btn {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    transition: var(--transition-fast);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    font-family: var(--font-body);
+}
+
+.nav-dropdown-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-dropdown-btn.active {
+    color: var(--accent-cyan);
+    background: rgba(76, 201, 240, 0.1);
+}
+
+.nav-dropdown-content {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 260px;
+    background: rgba(15, 22, 45, 0.95);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    padding: 8px;
+    max-height: 70vh;
+    overflow-y: auto;
+    animation: dropdownFade 0.2s ease-out;
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nav-dropdown:hover .nav-dropdown-content,
+.nav-dropdown-content:hover {
+    display: block;
+}
+
+.nav-dropdown-content a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.nav-dropdown-content a:hover {
+    background: rgba(76, 201, 240, 0.08);
+    color: var(--text-primary);
+}
+
+.nav-dropdown-content a .dd-icon {
+    font-size: 16px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.nav-dropdown-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 6px 8px;
+}
+
+.nav-dropdown-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    padding: 8px 14px 4px;
+    font-weight: 600;
+}
+
+/* ---- Factor Bars (AI Explanation) ---- */
+.factor-bar {
+    animation: factorGrow 1.2s ease-out;
+}
+
+@keyframes factorGrow {
+    from {
+        width: 0 !important;
+    }
+}
+
+/* ---- Responsive Adjustments ---- */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .chart-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .metric-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .heatmap-table {
+        font-size: 12px;
+    }
+
+    .heatmap-cell {
+        padding: 12px 8px;
+        min-width: 60px;
+    }
+
+    .nav-dropdown-content {
+        position: fixed;
+        top: 60px;
+        left: 8px;
+        right: 8px;
+        min-width: unset;
+    }
+
+    .sim-control label {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .metric-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

@@ -1,22 +1,92 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="glass-card">
-    <h2>Train Machine Learning Model</h2>
+<div class="glass-card" style="max-width:750px">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+        <div class="step-item completed">
+            <div class="step-circle">✓</div>
+        </div>
+        <div class="step-item active">
+            <div class="step-line"></div>
+            <div class="step-circle">2</div>
+        </div>
+        <div class="step-item">
+            <div class="step-line"></div>
+            <div class="step-circle">3</div>
+        </div>
+    </div>
 
+    <h2 class="gradient-text">Train Machine Learning Model</h2>
     <p class="subtitle">
-        “Without data, you're just another person with an opinion.”
+        Compare SVM and Random Forest classifiers. The best performing model
+        is automatically selected and saved for predictions.
     </p>
 
-    <form method="POST">
-        <button class="btn-secondary">Train & Select Best Model</button>
-    </form>
+    <div style="text-align:center; margin: 28px 0">
+        <form method="POST" id="trainForm">
+            <button type="submit" class="btn-secondary" style="padding:16px 44px; font-size:16px" id="trainBtn">
+                ⚡ Train & Select Best Model
+            </button>
+        </form>
+    </div>
 
     {% if score %}
-    <hr>
-    <p><b>Best Model:</b> {{ best_model }}</p>
-    <p><b>Accuracy:</b> {{ score }}</p>
+    <hr class="glow-divider">
+
+    <!-- Model Comparison -->
+    <h3 style="text-align:center; margin-bottom:20px">📊 Model Comparison</h3>
+
+    <div class="model-comparison">
+        <div class="model-card {% if best_model == 'SVM' %}best{% endif %}">
+            {% if best_model == 'SVM' %}
+            <span class="badge badge-success" style="margin-bottom:10px">🏆 Best</span>
+            {% endif %}
+            <h4>🔬 SVM</h4>
+            <p style="color:var(--text-secondary); font-size:14px; margin-bottom:8px">Support Vector Machine</p>
+            <div style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:var(--accent-cyan)">
+                {{ (svm_acc * 100)|round(1) }}%
+            </div>
+            <div class="accuracy-bar">
+                <div class="accuracy-fill" style="width: {{ svm_acc * 100 }}%"></div>
+            </div>
+        </div>
+
+        <div class="model-card {% if best_model == 'Random Forest' %}best{% endif %}">
+            {% if best_model == 'Random Forest' %}
+            <span class="badge badge-success" style="margin-bottom:10px">🏆 Best</span>
+            {% endif %}
+            <h4>🌲 Random Forest</h4>
+            <p style="color:var(--text-secondary); font-size:14px; margin-bottom:8px">Ensemble Classifier</p>
+            <div style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:var(--accent-green)">
+                {{ (rf_acc * 100)|round(1) }}%
+            </div>
+            <div class="accuracy-bar">
+                <div class="accuracy-fill" style="width: {{ rf_acc * 100 }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="model-result" style="margin-top:24px">
+        <div style="text-align:center">
+            <span class="badge badge-info" style="font-size:14px; padding:8px 20px">
+                🏆 Best Model: <strong>{{ best_model }}</strong> — Accuracy: <strong>{{ (score * 100)|round(1)
+                    }}%</strong>
+            </span>
+        </div>
+        <p style="text-align:center; margin-top:16px; color:var(--text-secondary); font-size:14px">
+            Model saved and ready for predictions.
+            <a href="/prediction" style="color:var(--accent-cyan); text-decoration:none; font-weight:600">Go to Predict
+                →</a>
+        </p>
+    </div>
     {% endif %}
 </div>
+
+<script>
+    document.getElementById('trainForm').addEventListener('submit', function () {
+        showSpinner('Training models... This may take a moment ⚡');
+    });
+</script>
 
 {% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-success" style="font-size:13px">Model Confidence</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Prediction Confidence Indicator</h1>
+    <p class="subtitle">Visual confidence scores showing how certain the model is about each prediction</p>
+
+    {% if data %}
+    <!-- Summary -->
+    <div class="metric-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom:24px">
+        {% set vh = data|selectattr('conf_label', 'equalto', 'Very High')|list|length %}
+        {% set h = data|selectattr('conf_label', 'equalto', 'High')|list|length %}
+        {% set m = data|selectattr('conf_label', 'equalto', 'Moderate')|list|length %}
+        {% set l = data|selectattr('conf_label', 'equalto', 'Low')|list|length %}
+        <div class="metric-card">
+            <div class="metric-icon">💚</div>
+            <div class="metric-value" style="color:#06d6a0">{{ vh }}</div>
+            <div class="metric-label">Very High</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">💙</div>
+            <div class="metric-value" style="color:#4cc9f0">{{ h }}</div>
+            <div class="metric-label">High</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🧡</div>
+            <div class="metric-value" style="color:#fb8500">{{ m }}</div>
+            <div class="metric-label">Moderate</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">❤️</div>
+            <div class="metric-value" style="color:#ef233c">{{ l }}</div>
+            <div class="metric-label">Low</div>
+        </div>
+    </div>
+
+    <!-- Confidence Cards -->
+    <div class="metric-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))">
+        {% for item in data[:20] %}
+        <div class="glass-card" style="max-width:none; margin:0; padding:20px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+                <span style="font-weight:600; color:var(--text-primary)">#{{ item.id }}</span>
+                <span class="badge {% if item.result == 'Churn' %}badge-danger{% else %}badge-success{% endif %}">{{
+                    item.result }}</span>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px">
+                <span style="font-size:12px; color:var(--text-muted); min-width:60px">Churn</span>
+                <div
+                    style="flex:1; height:20px; background:rgba(255,255,255,0.04); border-radius:10px; overflow:hidden">
+                    <div
+                        style="height:100%; width:{{ item.probability }}%; background:{% if item.probability >= 70 %}var(--gradient-danger){% elif item.probability >= 49 %}var(--gradient-warn){% else %}var(--gradient-success){% endif %}; border-radius:10px; transition:width 1s ease">
+                    </div>
+                </div>
+                <span
+                    style="font-size:13px; font-weight:700; color:var(--text-primary); min-width:40px; text-align:right">{{
+                    item.probability }}%</span>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:12px">
+                <span style="font-size:12px; color:var(--text-muted); min-width:60px">Conf.</span>
+                <div
+                    style="flex:1; height:20px; background:rgba(255,255,255,0.04); border-radius:10px; overflow:hidden">
+                    <div
+                        style="height:100%; width:{{ item.conf_pct }}%; background:{{ item.conf_color }}; border-radius:10px; transition:width 1s ease; opacity:0.8">
+                    </div>
+                </div>
+                <span
+                    style="font-size:13px; font-weight:700; min-width:40px; text-align:right; color:{{ item.conf_color }}">{{
+                    item.conf_pct }}%</span>
+            </div>
+
+            <div style="text-align:center; margin-top:10px">
+                <span class="badge"
+                    style="background:{{ item.conf_color }}22; color:{{ item.conf_color }}; border:1px solid {{ item.conf_color }}33">{{
+                    item.conf_label }} Confidence</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="glass-card" style="text-align:center">
+        <div style="font-size:48px; margin-bottom:16px">🎯</div>
+        <h3>No Predictions Yet</h3>
+        <p class="subtitle">Make predictions to see confidence scores</p>
+        <a href="/prediction" class="btn-primary" style="text-decoration:none; margin-top:16px">Make a Prediction</a>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}

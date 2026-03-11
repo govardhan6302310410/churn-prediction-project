@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-success" style="font-size:13px">Feature Analysis</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Feature Importance Visualization</h1>
+    <p class="subtitle">Discover which customer attributes have the most impact on churn predictions</p>
+
+    {% if labels %}
+    <div class="glass-card" style="max-width:none">
+        <h3 style="color:var(--text-primary); text-align:center; margin-bottom:20px">🏆 Feature Importance from Random
+            Forest</h3>
+        <canvas id="importanceChart" style="max-height:400px"></canvas>
+    </div>
+
+    <!-- Feature Details -->
+    <div class="glass-card" style="max-width:none; margin-top:20px">
+        <h3 style="color:var(--text-primary); margin-bottom:16px">📋 Importance Breakdown</h3>
+        {% for i in range(labels|length) %}
+        <div class="importance-row" style="display:flex; align-items:center; gap:16px; margin-bottom:12px">
+            <span style="min-width:180px; font-weight:600; font-size:14px; color:var(--text-primary)">{{ labels[i]
+                }}</span>
+            <div style="flex:1; height:24px; background:rgba(255,255,255,0.04); border-radius:12px; overflow:hidden">
+                <div
+                    style="height:100%; width:{{ values[i] }}%; background:linear-gradient(90deg, #4cc9f0, #7b61ff); border-radius:12px; transition:width 1s ease">
+                </div>
+            </div>
+            <span style="min-width:50px; text-align:right; font-weight:700; color:var(--accent-cyan); font-size:14px">{{
+                values[i] }}%</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="glass-card" style="text-align:center">
+        <div style="font-size:48px; margin-bottom:16px">🌳</div>
+        <h3>No Model Data Available</h3>
+        <p class="subtitle">Upload a dataset and train the model to see feature importances</p>
+        <a href="/upload" class="btn-primary" style="text-decoration:none; margin-top:16px">Upload Dataset</a>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+{% if labels %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    new Chart(document.getElementById('importanceChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: [{% for l in labels %}"{{ l }}",{% endfor %}],
+        datasets: [{
+            label: 'Importance (%)',
+            data: [{% for v in values %}{{ v }}, {% endfor %}],
+        backgroundColor: [
+        'rgba(76, 201, 240, 0.7)', 'rgba(123, 97, 255, 0.7)', 'rgba(6, 214, 160, 0.7)',
+        'rgba(251, 133, 0, 0.7)', 'rgba(247, 37, 133, 0.7)', 'rgba(239, 35, 60, 0.7)',
+        'rgba(76, 201, 240, 0.5)'
+    ],
+        borderRadius: 8,
+        borderSkipped: false,
+        barThickness: 36
+            }]
+        },
+        options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+            y: { ticks: { color: '#8892a8', font: { size: 12 } }, grid: { display: false } }
+        }
+    }
+    });
+</script>
+{% endif %}
+
+{% endblock %}

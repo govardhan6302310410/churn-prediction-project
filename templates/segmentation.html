@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="premium-container">
+    <div style="text-align:center; margin-bottom:12px">
+        <span class="badge badge-purple" style="font-size:13px">Customer Intelligence</span>
+    </div>
+    <h1 class="page-title gradient-text" style="font-size:2rem">Customer Segmentation Dashboard</h1>
+    <p class="subtitle">Classify customers into risk segments to prioritize retention efforts</p>
+
+    <!-- SEGMENT CARDS -->
+    <div class="dashboard-grid" style="grid-template-columns: repeat(4, 1fr)">
+        <div class="stat-card" style="background: linear-gradient(135deg, #06d6a0, #38b000)">
+            <h3>Low Risk</h3>
+            <h2 data-count="{{ summary.get('Low Risk', 0) }}">0</h2>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #fb8500, #ffb703)">
+            <h3>Medium Risk</h3>
+            <h2 data-count="{{ summary.get('Medium Risk', 0) }}">0</h2>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #ef233c, #f72585)">
+            <h3>High Risk</h3>
+            <h2 data-count="{{ summary.get('High Risk', 0) }}">0</h2>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #7b61ff, #4cc9f0)">
+            <h3>VIP Customers</h3>
+            <h2 data-count="{{ summary.get('VIP', 0) }}">0</h2>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="chart-row">
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">🍩 Segment Distribution</h3>
+            <canvas id="segPie"></canvas>
+        </div>
+        <div class="glass-card" style="max-width:none; margin:0">
+            <h3 style="color:var(--text-primary)">📊 Segment Comparison</h3>
+            <canvas id="segBar"></canvas>
+        </div>
+    </div>
+
+    <!-- SEGMENT DETAILS -->
+    {% for name, records in segments.items() %}
+    {% if records %}
+    <div class="glass-card observe-fade" style="max-width:none; margin-top:20px">
+        <h3 style="color:var(--text-primary)">
+            {% if name == 'Low Risk' %}🟢{% elif name == 'Medium Risk' %}🟠{% elif name == 'High Risk' %}🔴{% else
+            %}💎{% endif %}
+            {{ name }} Customers ({{ records|length }})
+        </h3>
+        <div style="overflow-x:auto; margin-top:12px">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Result</th>
+                        <th>Probability</th>
+                        <th>Day Min</th>
+                        <th>Service Calls</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in records[:5] %}
+                    <tr>
+                        <td>#{{ r.id }}</td>
+                        <td><span
+                                class="badge {% if r.result == 'Churn' %}badge-danger{% else %}badge-success{% endif %}">{{
+                                r.result }}</span></td>
+                        <td>{{ r.probability }}%</td>
+                        <td>{{ r.day_minutes }}</td>
+                        <td>{{ r.service_calls }}</td>
+                        <td>{{ r.date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <div style="text-align:center; margin-top:32px">
+        <a href="/dashboard" class="btn-outline" style="text-decoration:none">← Back to Dashboard</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = ['Low Risk', 'Medium Risk', 'High Risk', 'VIP'];
+    const values = [{{ summary.get('Low Risk', 0) }}, { { summary.get('Medium Risk', 0) } }, { { summary.get('High Risk', 0) } }, { { summary.get('VIP', 0) } }];
+    const colors = ['#06d6a0', '#fb8500', '#ef233c', '#7b61ff'];
+
+    new Chart(document.getElementById('segPie').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, cutout: '65%', borderRadius: 6, spacing: 3 }] },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#8892a8', font: { family: 'Inter', size: 12 }, padding: 16 } } }, animation: { animateRotate: true, duration: 1200 } }
+    });
+
+    new Chart(document.getElementById('segBar').getContext('2d'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Customers', data: values, backgroundColor: colors, borderRadius: 8, borderSkipped: false, barThickness: 40 }] },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#8892a8' } } }, scales: { x: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#5a6478' }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    });
+</script>
+
+{% endblock %}
